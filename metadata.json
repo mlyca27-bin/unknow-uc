@@ -1,0 +1,6 @@
+{
+  "name": "PUBG UC Store - BinRao",
+  "description": "Premium PUBG Mobile UC Top-Up Store with instant UID verification, custom bonus packs, settings control panel, and card checkout simulation developed by BinRao.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
