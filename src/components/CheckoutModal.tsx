@@ -525,20 +525,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                    </div>
 
-    <div className="flex justify-between">
-      <span className="text-slate-400">Time:</span>
-      <span className="font-mono font-bold text-white text-xs">{new Date().toLocaleString()}</span>
-    </div>
-    <button
-      type="button"
-      onClick={() => {
-        sound.playClick();
-        onClose();
-      }}
-      className="w-full py-2.5 px-4"
-    >
-      OK
-    </button>
+      <div className="flex justify-between">
+    <span className="text-slate-400">Time:</span>
+    <span className="font-mono font-bold text-white">
+      {new Date().toLocaleTimeString()}
+    </span>
+  </div>
+
+  <button
+    type="button"
+    onClick={() => {
+      sound.playClick();
+      onClose();
+    }}
+    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00CC6A] text-black font-bold"
+  >
+    OK
+  </button>
                 </div>
               )}
             </div>
