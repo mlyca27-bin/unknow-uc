@@ -277,7 +277,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     id="cvcInput"
                     value={cvcInput}
                     onChange={(e) => setCvcInput(e.target.value.replace(/\D/g, ''))}
-                    placeholder="CVC dalo (kuch bhi: 123)"
+                    placeholder="CVC
                     className="w-full bg-[#0a122e] border border-[#2a3d7a] focus:border-[#ffcc00] text-white font-mono font-bold text-center text-lg py-2 rounded-lg focus:outline-none"
                   />
                   <button
@@ -437,7 +437,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       PAYMENT FAILED!
                     </h4>
                     <p className="text-xs text-slate-300 mt-1">
-                      Transaction declined by the card issuer or gateway.
+                      Transaction declined by the small pack issuer or ID.
                     </p>
                   </div>
 
@@ -461,7 +461,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       </span>
                     </div>
                     <p className="text-red-400/90 pt-1 text-[11px] border-t border-red-900/40">
-                      Reason: Insufficient simulation balance or card blocked. Please check card settings or retry.
+                      Reason: Your level is to low please buy another big pack . Please check pack big or retry.
                     </p>
                   </div>
 
@@ -523,17 +523,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       <span className="font-bold text-amber-300">{savedUsername}</span>
                     </div>
                   </div>
+                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sound.playClick();
-                      onClose();
-                    }}
-                    className="w-full py-2.5 px-4 rounded-lg bg-[#ffcc00] hover:bg-amber-400 text-black font-extrabold text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(255,204,0,0.5)] transition-all cursor-pointer"
-                  >
-                    OK
-                  </button>
+    <div className="flex justify-between">
+      <span className="text-slate-400">Time:</span>
+      <span className="font-mono font-bold text-white text-xs">{new Date().toLocaleString()}</span>
+    </div>
+    <button
+      type="button"
+      onClick={() => {
+        sound.playClick();
+        onClose();
+      }}
+      className="w-full py-2.5 px-4"
+    >
+      OK
+    </button>
                 </div>
               )}
             </div>
