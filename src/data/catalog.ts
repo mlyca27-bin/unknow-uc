@@ -26,11 +26,19 @@ export const UC_PACKAGES: UCPackage[] = [
   { id: 'ff-2180', title: '2180 Diamonds', baseUC: 2180, bonusUC: 0, totalUC: 2180, priceAED: 210, badge: '20%', badgeType: 'percentage', description: '2180 Diamonds', category: 'freefire', game: 'freefire' },
   { id: 'ff-5600', title: '5600 Diamonds', baseUC: 5600, bonusUC: 0, totalUC: 5600, priceAED: 520, badge: 'BEST', badgeType: 'best', description: '5600 Diamonds', category: 'freefire', game: 'freefire' },
 
-  // YALLA LUDO 25K to 70K
-  { id: 'yalla-25k', title: '25000 Diamonds', baseUC: 25000, bonusUC: 0, totalUC: 25000, priceAED: 180, badge: 'Yalla', badgeType: 'new', description: '25K Yalla Diamonds', category: 'yalla', game: 'yalla' },
-  { id: 'yalla-35k', title: '35000 Diamonds', baseUC: 35000, bonusUC: 0, totalUC: 35000, priceAED: 250, badge: 'HOT', badgeType: 'percentage', description: '35K Yalla Diamonds', category: 'yalla', game: 'yalla' },
-  { id: 'yalla-50k', title: '50000 Diamonds', baseUC: 50000, bonusUC: 0, totalUC: 50000, priceAED: 360, badge: 'BEST', badgeType: 'best', description: '50K Yalla Diamonds', category: 'yalla', game: 'yalla' },
-  { id: 'yalla-70k', title: '70000 Diamonds', baseUC: 70000, bonusUC: 5000, totalUC: 75000, priceAED: 500, badge: '35%', badgeType: 'percentage', description: '70000 + 5000 Bonus', category: 'yalla', game: 'yalla' },
+    // YALLA LUDO - GOLD PACKS (Photo 1)
+  { id: 'yalla-gold-10m', title: 'Gold 9,973,990', baseUC: 9973990, bonusUC: 0, priceAED: 203.91, image: '💰', originalPrice: 245.54 },
+  { id: 'yalla-gold-25m', title: 'Gold 25,236,460', baseUC: 25236460, bonusUC: 0, priceAED: 407.84, image: '💰', originalPrice: 491.09 },
+  { id: 'yalla-gold-76m', title: 'Gold 76,000,860', baseUC: 76000860, bonusUC: 0, priceAED: 1223.55, image: '👑', originalPrice: 1473.26 },
+  { id: 'yalla-gold-126m', title: 'Gold 126,910,990', baseUC: 126910990, bonusUC: 0, priceAED: 2039.27, image: '👑', originalPrice: 2455.44 },
+
+  // YALLA LUDO - DIAMONDS PACKS (Photo 2)
+  { id: 'yalla-dia-5k', title: 'Diamonds 5,150', baseUC: 5150, bonusUC: 0, priceAED: 40.77, image: '💎', originalPrice: 49.10 },
+  { id: 'yalla-dia-13k', title: 'Diamonds 13,580', baseUC: 13580, bonusUC: 0, priceAED: 101.97, image: '💎', originalPrice: 122.80 },
+  { id: 'yalla-dia-27k', title: 'Diamonds 27,640', baseUC: 27640, bonusUC: 0, priceAED: 203.91, image: '💎', originalPrice: 245.54 },
+  { id: 'yalla-dia-55k', title: 'Diamonds 55,800', baseUC: 55800, bonusUC: 0, priceAED: 407.84, image: '💎', originalPrice: 491.09 },
+  { id: 'yalla-dia-168k', title: 'Diamonds 168,860', baseUC: 168860, bonusUC: 0, priceAED: 1223.55, image: '💎', originalPrice: 1473.26 },
+  { id: 'yalla-dia-283k', title: 'Diamonds 283,460', baseUC: 283460, bonusUC: 0, priceAED: 2039.27, image: '💎', originalPrice: 2455.44 },
 ] as unknown as UCPackage[];
 
 export const ALL_GAME_PACKAGES = UC_PACKAGES;
