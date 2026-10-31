@@ -36,14 +36,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [resultState, setResultState] = useState<'idle' | 'success' | 'failed' | 'pending'>('idle');
   const [currentOrderId, setCurrentOrderId] = useState<string>('');
 
-  // Reset state when modal opens or pack changes
   useEffect(() => {
     if (isOpen) {
       setCvcInput('');
       setIsProcessing(false);
       setResultState('idle');
       setCountdown(settings.countdownSeconds || 15);
-      // Auto select first enabled card
       const enabledCard = Object.entries(settings.cards).find(([, card]) => card.enabled);
       if (enabledCard) {
         setSelectedCardKey(enabledCard[0]);
@@ -54,7 +52,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     }
   }, [isOpen, selectedPack, settings]);
 
-  // Countdown timer during processing
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isProcessing && countdown > 0) {
@@ -148,7 +145,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
       <div className="relative w-full max-w-md bg-[#101c44] border-2 border-[#ffcc00] rounded-2xl shadow-[0_0_40px_rgba(255,204,0,0.35)] overflow-hidden">
-        {/* Header Bar */}
         <div className="bg-[#0a122e] border-b border-[#24376f] px-5 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <UCLogo size={24} />
@@ -169,12 +165,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           )}
         </div>
 
-        {/* Modal Body */}
         <div className="p-5 space-y-4 text-slate-200">
-          {/* STATE 1: IDLE - Card selection & Summary */}
           {resultState === 'idle' && !isProcessing && (
             <>
-              {/* Selected Pack Summary */}
               <div className="bg-[#08102a] border border-[#273a77] rounded-xl p-3.5 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
@@ -198,7 +191,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               </div>
 
-              {/* Destination UID + Status + Time Date Box */}
               <DestinationStatusBox
                 uid={uid}
                 shopName={savedUsername || 'BinRao Gaming'}
@@ -206,7 +198,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 timeDate={settings.customTimeDate || formatCurrentTimeDate()}
               />
 
-              {/* Select Payment Method */}
               <div>
                 <label className="text-xs font-extrabold uppercase text-amber-300 block mb-2">
                   Select Payment Card:
@@ -245,7 +236,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                             </div>
                           </div>
                         </div>
-
                         <div
                           className={`w-4 h-4 rounded-full border flex items-center justify-center ${
                             isSelected
@@ -261,7 +251,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               </div>
 
-              {/* CVC Box (Shown if CVC enabled in settings and not yet verified) */}
               {settings.cvcEnabled && !cvcVerified && (
                 <div
                   id="cvcBox"
@@ -291,7 +280,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               )}
 
-              {/* Pay With Card Button */}
               <div>
                 <button
                   type="button"
@@ -316,7 +304,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </>
           )}
 
-          {/* STATE 2: LOADING BOX (With Spinning Loader & Real-time Countdown) */}
           {isProcessing && (
             <div id="loadingBox" className="text-center py-8 space-y-4 animate-fadeIn">
               <div
@@ -347,10 +334,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
           )}
 
-          {/* STATE 3: RESULT POPUP (Matches exact specification for SUCCESS, FAILED, PENDING) */}
           {resultState !== 'idle' && !isProcessing && (
             <div id="resultPopup" className="text-center py-4 space-y-4 animate-fadeIn">
-              {/* SUCCESS */}
               {resultState === 'success' && (
                 <div className="space-y-4">
                   <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border-2 border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.5)]">
@@ -360,12 +345,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <h4 className="text-2xl font-black text-emerald-400 uppercase tracking-wide">
                       PAYMENT SUCCESSFUL!
                     </h4>
-                    <p className="text-xs text-slate-300 mt-1">
-                      UC sent successfully to in-game mailbox!
-                    </p>
+                    <p className="text-xs text-slate-300 mt-1">UC sent successfully to in-game mailbox!</p>
                   </div>
-
-                  {/* Receipt breakdown */}
                   <div className="bg-[#09112e] border border-[#273a77] rounded-xl p-3.5 text-xs text-left space-y-2">
                     <div className="flex justify-between border-b border-[#1c2c62] pb-1.5">
                       <span className="text-slate-400">Order ID:</span>
@@ -377,9 +358,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Total UC Delivered:</span>
-                      <span className="font-bold text-emerald-400">
-                        {selectedPack.totalUC.toLocaleString()} UC
-                      </span>
+                      <span className="font-bold text-emerald-400">{selectedPack.totalUC.toLocaleString()} UC</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">UID:</span>
@@ -397,12 +376,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </div>
                     <div className="flex justify-between border-t border-[#1c2c62] pt-1.5 font-bold">
                       <span className="text-slate-300">Amount Charged:</span>
-                      <span className="text-[#ffcc00] font-black">
-                        {formatPrice(selectedPack.priceAED, currency)}
-                      </span>
+                      <span className="text-[#ffcc00] font-black">{formatPrice(selectedPack.priceAED, currency)}</span>
                     </div>
                   </div>
-
                   <div className="flex items-center gap-2 pt-2">
                     <button
                       type="button"
@@ -426,21 +402,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               )}
 
-              {/* FAILED */}
               {resultState === 'failed' && (
                 <div className="space-y-4">
                   <div className="w-16 h-16 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto border-2 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]">
                     <XCircle className="w-10 h-10" />
                   </div>
                   <div>
-                    <h4 className="text-2xl font-black text-red-400 uppercase tracking-wide">
-                      PAYMENT FAILED!
-                    </h4>
-                    <p className="text-xs text-slate-300 mt-1">
-                      Transaction declined by the small pack issuer or ID.
-                    </p>
+                    <h4 className="text-2xl font-black text-red-400 uppercase tracking-wide">PAYMENT FAILED!</h4>
+                    <p className="text-xs text-slate-300 mt-1">Transaction declined by the small pack issuer or ID.</p>
                   </div>
-
                   <div className="bg-[#18090d] border border-red-900/50 rounded-xl p-3.5 text-xs text-left space-y-2">
                     <div className="flex justify-between">
                       <span className="text-slate-400">Pack:</span>
@@ -464,7 +434,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       Reason: Your level is to low please buy another big pack . Please check pack big or retry.
                     </p>
                   </div>
-
                   <div className="flex items-center gap-2 pt-2">
                     <button
                       type="button"
@@ -490,21 +459,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               )}
 
-              {/* PENDING */}
               {resultState === 'pending' && (
                 <div className="space-y-4">
                   <div className="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto border-2 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.5)]">
                     <Clock className="w-10 h-10 animate-spin" />
                   </div>
                   <div>
-                    <h4 className="text-2xl font-black text-amber-400 uppercase tracking-wide">
-                      PAYMENT PENDING!
-                    </h4>
+                    <h4 className="text-2xl font-black text-amber-400 uppercase tracking-wide">PAYMENT PENDING!</h4>
                     <p className="text-xs text-slate-300 mt-1">
                       Waiting for bank confirmation... UC will be credited once confirmed.
                     </p>
                   </div>
-
                   <div className="bg-[#191407] border border-amber-900/50 rounded-xl p-3.5 text-xs text-left space-y-2">
                     <div className="flex justify-between">
                       <span className="text-slate-400">Order ID:</span>
@@ -522,26 +487,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       <span className="text-slate-400">Username:</span>
                       <span className="font-bold text-amber-300">{savedUsername}</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">Time:</span>
+                      <span className="font-mono font-bold text-white">{new Date().toLocaleTimeString()}</span>
+                    </div>
                   </div>
-                   </div>
-
-      <div className="flex justify-between">
-    <span className="text-slate-400">Time:</span>
-    <span className="font-mono font-bold text-white">
-      {new Date().toLocaleTimeString()}
-    </span>
-  </div>
-
-  <button
-    type="button"
-    onClick={() => {
-      sound.playClick();
-      onClose();
-    }}
-    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00CC6A] text-black font-bold"
-  >
-    OK
-  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playClick();
+                      onClose();
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00CC6A] text-black font-bold"
+                  >
+                    OK
+                  </button>
                 </div>
               )}
             </div>
