@@ -1,116 +1,106 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-function App() {
-  const [game, setGame] = useState<'pubg'|'ff'>('pubg')
+export default function App() {
+  const [game, setGame] = useState('pubg')
   const [sel, setSel] = useState(-1)
   const [uid, setUid] = useState('')
-  const [verified, setVerified] = useState(false)
   const [showSet, setShowSet] = useState(false)
-  const packsVals = [25000,50000,75000,100000,125000,150000,175000,200000]
-  
-  const [cfg, setCfg] = useState(()=>{
-    const saved = localStorage.getItem('dealstore_v10')
-    return saved ? JSON.parse(saved) : {
-      pubgName:'BINRAO 876', ffName:'BINRAO FF',
-      uid1:'5991827364', uid2:'5829104821', uid3:'5123456789',
-      pubgBanner:'🔥 DEAL STORE - PUBG UC OFFICIAL - 25K TO 200K',
-      ffBanner:'💎 DEAL STORE - FREE FIRE OFFICIAL - 25K TO 200K',
-      pubgD:2, pubgH:12, pubgM:30, pubgS:0,
-      ffD:3, ffH:5, ffM:45, ffS:0,
-      visa:'4242', master:'8888', amex:'1001', vip:'9999',
-      cvcOn:'on', cvc:'123', exp:'12/28', holder:'BIN RAO',
-      wapp:'+92 300 1234567', tele:'@BINRAO876',
-      refund:'DEAL STORE - No refund after delivery. Fail hua to 24h me refund.',
-      privacy:'DEAL STORE - Only UID collect karte hain.',
-      terms:'DEAL STORE - Sahi UID do. Galat UID ki zimmedari nahi. 5-30 min delivery.',
-      footerContact:'WhatsApp: +92 300 1234567 | Telegram: @BINRAO876 | DEAL STORE'
-    }
+
+  const [s, setS] = useState({
+    pubgName: 'BINRAO 876',
+    ffName: 'BINRAO FF',
+    uid1: '5991827364',
+    uid2: '5829104821',
+    uid3: '5123456789',
+    pubgBanner: 'DEAL STORE - PUBG UC OFFICIAL - 25K TO 200K',
+    ffBanner: 'DEAL STORE - FREE FIRE OFFICIAL - 25K TO 200K',
+    pubgD: '2', pubgH: '12', pubgM: '30', pubgS: '0',
+    ffD: '3', ffH: '5', ffM: '45', ffS: '0',
+    visa: '4242', master: '8888', amex: '1001', vip: '9999',
+    wapp: '+92 300 1234567', tele: '@BINRAO876',
+    footer: 'WhatsApp: +92 300 1234567 | Telegram: @BINRAO876 | DEAL STORE'
   })
 
-  const [timeLeft, setTimeLeft] = useState({d:0,h:0,m:0,s:0})
-
-  useEffect(()=>{
-    const id=setInterval(()=>{
-      const now=Date.now()
-      const target=new Date()
-      const addD = game==='pubg'?cfg.pubgD:cfg.ffD
-      const addH = game==='pubg'?cfg.pubgH:cfg.ffH
-      const addM = game==='pubg'?cfg.pubgM:cfg.ffM
-      const addS = game==='pubg'?cfg.pubgS:cfg.ffS
-      target.setDate(target.getDate()+parseInt(addD))
-      target.setHours(target.getHours()+parseInt(addH))
-      target.setMinutes(target.getMinutes()+parseInt(addM))
-      target.setSeconds(target.getSeconds()+parseInt(addS))
-      const diff=Math.max(0,target.getTime()-now)
-      setTimeLeft({d:Math.floor(diff/86400000),h:Math.floor(diff%86400000/3600000),m:Math.floor(diff%3600000/60000),s:Math.floor(diff%60000/1000)})
-    },1000)
-    return()=>clearInterval(id)
-  },[game,cfg])
-
-  const saveAll=()=>{
-    localStorage.setItem('dealstore_v10', JSON.stringify(cfg))
-    setShowSet(false)
-    alert('✅ DEAL STORE Settings Saved!')
-  }
+  const packs = [25000,50000,75000,100000,125000,150000,175000,200000]
 
   return (
-    <div style={{background:'#0a0e13',color:'#fff',minHeight:'100vh',fontFamily:'Segoe UI'}}>
-      <div style={{display:'flex',justifyContent:'space-between',padding:'12px 15px',background:'#111822',borderBottom:'2px solid #1e2d40',position:'sticky',top:0,zIndex:100}}>
-        <div style={{display:'flex',gap:8}}>
-          <button onClick={()=>{setGame('pubg');setSel(-1)}} style={{padding:'8px 18px',borderRadius:20,border:'1.5px solid #2a3a50',background:game==='pubg'?'#0f8a3a':'#1a2535',color:game==='pubg'?'#fff':'#8aa0c0',fontWeight:700}}>PUBG UC</button>
-          <button onClick={()=>{setGame('ff');setSel(-1)}} style={{padding:'8px 18px',borderRadius:20,border:'1.5px solid #2a3a50',background:game==='ff'?'#0f8a3a':'#1a2535',color:game==='ff'?'#fff':'#8aa0c0',fontWeight:700}}>FREE FIRE</button>
+    <div style={{background:'#0a0e13', color:'#fff', minHeight:'100vh', padding:15}}>
+      <div style={{display:'flex', justifyContent:'space-between'}}>
+        <div>
+          <button onClick={()=>setGame('pubg')} style={{padding:8, marginRight:8, background: game==='pubg'?'green':'#222', color:'#fff'}}>PUBG UC</button>
+          <button onClick={()=>setGame('ff')} style={{padding:8, background: game==='ff'?'green':'#222', color:'#fff'}}>FREE FIRE</button>
         </div>
-        <button onClick={()=>setShowSet(true)} style={{padding:'8px 18px',borderRadius:20,border:'1.5px solid #ffb700',background:'#1a2535',color:'#ffb700',fontWeight:700}}>⚙ Setting</button>
+        <button onClick={()=>setShowSet(true)} style={{padding:8, border:'1px solid gold', background:'#222', color:'gold'}}>⚙ Setting (22)</button>
       </div>
 
-      <div style={{maxWidth:1300,margin:'0 auto',padding:15}}>
-        <div style={{background:'linear-gradient(135deg,#151e2c,#1e2d40)',border:'1.5px solid #2a3a50',borderRadius:14,padding:15,marginBottom:15}}>
-          <input value={uid} onChange={e=>{setUid(e.target.value); setVerified(e.target.value.length>=8)}} placeholder="Enter UID (5 se start)" style={{width:'100%',padding:'12px 14px',borderRadius:10,border:'1.5px solid #2a3a50',background:'#0d131c',color:'#fff'}}/>
-          <div style={{display:'flex',gap:7,marginTop:10}}>{[cfg.uid1,cfg.uid2,cfg.uid3].map(u=><div key={u} onClick={()=>{setUid(u);setVerified(true)}} style={{padding:'6px 12px',background:'#1e2d40',border:'1px solid #2a3a50',borderRadius:20,fontSize:12,cursor:'pointer'}}>{u}</div>)}</div>
-          {verified && <div style={{marginTop:10,padding:10,background:'#0f2a18',border:'1px solid #1fbf5a',borderRadius:10,color:'#1fbf5a',fontWeight:700}}>✓ Verified: {game==='pubg'?cfg.pubgName:cfg.ffName}</div>}
-        </div>
+      <h2 style={{marginTop:15}}>{game==='pubg'? s.pubgBanner : s.ffBanner}</h2>
 
-        <div style={{borderRadius:16,padding:'18px 20px',marginBottom:18,background:game==='ff'?'linear-gradient(135deg,#1a1a2d,#2a0f4a)':'linear-gradient(135deg,#1a2d1a,#0f4a2a)',border:game==='ff'?'1.5px solid #7b5cff':'1.5px solid #1fbf5a'}}>
-          <h2>{game==='pubg'?cfg.pubgBanner:cfg.ffBanner}</h2>
-          <p style={{fontSize:12,opacity:.8}}>DEAL STORE - Premium Instant Delivery - 8 Packs</p>
-          <div style={{display:'flex',gap:8,marginTop:10}}>
-            <div style={{background:'rgba(0,0,0,.4)',borderRadius:8,padding:'6px 10px',minWidth:55,textAlign:'center'}}><b style={{fontSize:18}}>{timeLeft.d}</b><div style={{fontSize:10}}>Days</div></div>
-            <div style={{background:'rgba(0,0,0,.4)',borderRadius:8,padding:'6px 10px',minWidth:55,textAlign:'center'}}><b style={{fontSize:18}}>{timeLeft.h}</b><div style={{fontSize:10}}>Hours</div></div>
-            <div style={{background:'rgba(0,0,0,.4)',borderRadius:8,padding:'6px 10px',minWidth:55,textAlign:'center'}}><b style={{fontSize:18}}>{timeLeft.m}</b><div style={{fontSize:10}}>Mins</div></div>
-            <div style={{background:'rgba(0,0,0,.4)',borderRadius:8,padding:'6px 10px',minWidth:55,textAlign:'center'}}><b style={{fontSize:18}}>{timeLeft.s}</b><div style={{fontSize:10}}>Secs</div></div>
+      <input value={uid} onChange={e=>setUid(e.target.value)} placeholder="Enter UID - 5 se start" style={{width:'100%', padding:10, marginTop:10, background:'#111', color:'#fff', border:'1px solid #333'}} />
+      <div style={{display:'flex', gap:6, marginTop:8}}>
+        <span onClick={()=>setUid(s.uid1)} style={{padding:'6px 10px', background:'#1e2d40', borderRadius:20, fontSize:12}}>{s.uid1}</span>
+        <span onClick={()=>setUid(s.uid2)} style={{padding:'6px 10px', background:'#1e2d40', borderRadius:20, fontSize:12}}>{s.uid2}</span>
+        <span onClick={()=>setUid(s.uid3)} style={{padding:'6px 10px', background:'#1e2d40', borderRadius:20, fontSize:12}}>{s.uid3}</span>
+      </div>
+
+      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:15}}>
+        {packs.map((v,i)=>(
+          <div key={i} onClick={()=>setSel(i)} style={{background:'#1a2535', border: sel===i?'2px solid lime':'1px solid #333', borderRadius:12, padding:10, textAlign:'center'}}>
+            <div style={{fontSize:30}}>{game==='ff'?'💎':'🪙'}</div>
+            <div style={{fontWeight:'bold'}}>{v.toLocaleString()} {game==='ff'?'Diamonds':'UC'}</div>
+            <button style={{width:'100%', marginTop:6, padding:6, background: game==='ff'?'red':'orange', border:'none', borderRadius:10}}>Buy Now</button>
           </div>
-        </div>
+        ))}
+      </div>
 
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}} className="packs">
-          {packsVals.map((v,i)=>{
-            const isBest=i>=6, isHot=i>=4&&i<6
-            return (
-              <div key={i} onClick={()=>setSel(i)} style={{background:'linear-gradient(180deg,#1a2535,#121a26)',border:sel===i?'1.5px solid #1fbf5a':'1.5px solid #2a3a50',borderRadius:14,padding:12,textAlign:'center',cursor:'pointer',position:'relative',boxShadow:sel===i?'0 0 18px rgba(31,191,90,.5)':''}}>
-                {isBest && <div style={{position:'absolute',top:6,right:6,fontSize:9,padding:'3px 6px',borderRadius:10,background:'#ffb700',color:'#000',fontWeight:800}}>BEST</div>}
-                {isHot && <div style={{position:'absolute',top:6,right:6,fontSize:9,padding:'3px 6px',borderRadius:10,background:'#ff1a2e',color:'#fff',fontWeight:800}}>HOT</div>}
-                <div style={{height:85,display:'flex',alignItems:'center',justifyContent:'center',fontSize:42}}>{game==='ff'?(i<2?'💎': '📦'):(i<2?'🪙':'📦')}</div>
-                {i>=2 && <div style={{fontSize:10,marginBottom:4,background:'#000',border:'1px solid #444',display:'inline-block',padding:'2px 6px',borderRadius:4}}>{game==='ff'?'FREE FIRE':'PUBG'}</div>}
-                <div style={{fontWeight:900,fontSize:16}}>{v.toLocaleString()} {game==='ff'?'Diamonds':'UC'}</div>
-                <button style={{width:'100%',padding:8,borderRadius:20,border:'none',fontWeight:800,marginTop:8,background:game==='ff'?'#ff1a2e':'linear-gradient(#ffb700,#ff8a00)',color:game==='ff'?'#fff':'#000'}}>Buy Now</button>
-              </div>
-            )
-          })}
-        </div>
+      <div style={{marginTop:20, display:'grid', gridTemplateColumns:'1fr 1fr', gap:8}}>
+        <div style={{background:'#1e2d40', padding:8, borderRadius:8}}>VISA .... {s.visa}</div>
+        <div style={{background:'#1e2d40', padding:8, borderRadius:8}}>MC .... {s.master}</div>
+        <div style={{background:'#1e2d40', padding:8, borderRadius:8}}>AMEX .... {s.amex}</div>
+        <div style={{background:'#1e2d40', border:'1px solid gold', padding:8, borderRadius:8}}>VIP .... {s.vip}</div>
+      </div>
 
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginTop:20}}>
-          <div style={{background:'#1e2d40',border:'1.5px solid #2a3a50',borderRadius:12,padding:12}}><b style={{fontSize:11}}>VISA .... {cfg.visa}</b><p>{cfg.holder}</p></div>
-          <div style={{background:'#1e2d40',border:'1.5px solid #2a3a50',borderRadius:12,padding:12}}><b style={{fontSize:11}}>MC .... {cfg.master}</b><p>{cfg.holder}</p></div>
-          <div style={{background:'#1e2d40',border:'1.5px solid #2a3a50',borderRadius:12,padding:12}}><b style={{fontSize:11}}>AMEX .... {cfg.amex}</b><p>{cfg.holder}</p></div>
-          <div style={{background:'#1e2d40',border:'1.5px solid #ffb700',borderRadius:12,padding:12}}><b style={{fontSize:11}}>VIP .... {cfg.vip}</b><p>PREMIUM</p></div>
-        </div>
-
-        <div style={{marginTop:30,background:'#0a0e13',borderTop:'2px solid #1e2d40',padding:'18px 15px',textAlign:'center'}}>
-          <div style={{color:'#1fbf5a',fontWeight:800,fontSize:13,marginBottom:6}}>Developer by BIN RAO</div>
-          <div style={{color:'#8aa0c0',fontSize:12}}>© 2026 DEAL STORE • PUBG & FREE FIRE Official</div>
-          <div style={{color:'#ffb700',fontSize:12,marginTop:6}}>{cfg.footerContact}</div>
-        </div>
+      <div style={{marginTop:25, textAlign:'center', borderTop:'1px solid #222', paddingTop:12}}>
+        <div style={{color:'lime', fontWeight:'bold'}}>Developer by BIN RAO</div>
+        <div style={{fontSize:11, marginTop:4}}>{s.footer}</div>
       </div>
 
       {showSet && (
-        <div style={{position:'fixed',top:0,left:0,right:0,bottom:0,background:'rgba(0,0,0,.85)',zIndex:200,overflowY:'auto',padding:15}}>
-          <div style={{background:'#121a26',border:'1.5px solid #2a3a50',borderRadius:16,maxWidth:600,margin:'20
+        <div style={{position:'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.9)', padding:15, overflow:'auto', zIndex:99}}>
+          <div style={{background:'#121a26', padding:15, borderRadius:12, maxWidth:550, margin:'auto'}}>
+            <button onClick={()=>setShowSet(false)} style={{float:'right', background:'red', color:'#fff', border:'none', padding:'5px 10px'}}>X Close</button>
+            <h3>DEAL STORE - 22 Settings</h3>
+
+            <input value={s.pubgName} onChange={e=>setS({...s, pubgName: e.target.value})} placeholder="1. PUBG Name" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.ffName} onChange={e=>setS({...s, ffName: e.target.value})} placeholder="2. FF Name" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.uid1} onChange={e=>setS({...s, uid1: e.target.value})} placeholder="3. UID1" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.uid2} onChange={e=>setS({...s, uid2: e.target.value})} placeholder="4. UID2" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.uid3} onChange={e=>setS({...s, uid3: e.target.value})} placeholder="5. UID3" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.pubgBanner} onChange={e=>setS({...s, pubgBanner: e.target.value})} placeholder="6. PUBG Banner" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.ffBanner} onChange={e=>setS({...s, ffBanner: e.target.value})} placeholder="7. FF Banner" style={{width:'100%', padding:8, marginTop:8}} />
+
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:8}}>
+              <input value={s.pubgD} onChange={e=>setS({...s, pubgD: e.target.value})} placeholder="8. PUBG D" style={{padding:8}} />
+              <input value={s.pubgH} onChange={e=>setS({...s, pubgH: e.target.value})} placeholder="9. PUBG H" style={{padding:8}} />
+              <input value={s.pubgM} onChange={e=>setS({...s, pubgM: e.target.value})} placeholder="10. PUBG M" style={{padding:8}} />
+              <input value={s.pubgS} onChange={e=>setS({...s, pubgS: e.target.value})} placeholder="11. PUBG S" style={{padding:8}} />
+              <input value={s.ffD} onChange={e=>setS({...s, ffD: e.target.value})} placeholder="12. FF D" style={{padding:8}} />
+              <input value={s.ffH} onChange={e=>setS({...s, ffH: e.target.value})} placeholder="13. FF H" style={{padding:8}} />
+              <input value={s.ffM} onChange={e=>setS({...s, ffM: e.target.value})} placeholder="14. FF M" style={{padding:8}} />
+              <input value={s.ffS} onChange={e=>setS({...s, ffS: e.target.value})} placeholder="15. FF S" style={{padding:8}} />
+            </div>
+
+            <input value={s.visa} onChange={e=>setS({...s, visa: e.target.value})} placeholder="16. Visa" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.master} onChange={e=>setS({...s, master: e.target.value})} placeholder="17. Master" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.amex} onChange={e=>setS({...s, amex: e.target.value})} placeholder="18. Amex" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.vip} onChange={e=>setS({...s, vip: e.target.value})} placeholder="19. VIP" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.wapp} onChange={e=>setS({...s, wapp: e.target.value})} placeholder="20. WhatsApp" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.tele} onChange={e=>setS({...s, tele: e.target.value})} placeholder="21. Telegram" style={{width:'100%', padding:8, marginTop:8}} />
+            <input value={s.footer} onChange={e=>setS({...s, footer: e.target.value})} placeholder="22. Footer Contact" style={{width:'100%', padding:8, marginTop:8}} />
+
+            <button onClick={()=>setShowSet(false)} style={{width:'100%', padding:10, background:'lime', border:'none', fontWeight:'bold', marginTop:12}}>SAVE - 22 Settings</button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
