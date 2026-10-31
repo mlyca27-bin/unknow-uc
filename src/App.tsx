@@ -201,13 +201,13 @@ export default function App() {
             <div className="space-y-1.5 text-center md:text-left">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs font-black tracking-wider uppercase">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Season Special • Up To 35% Extra Bonus UC</span>
+                <span>Season Special • 3 Games • Up To 40% Extra Bonus</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wide">
-                INSTANT PUBG MOBILE UC TOP-UP PORTAL
+                INSTANT TOP-UP PORTAL • PUBG UC • FREE FIRE • YALLA LUDO
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
-                Enter your Character UID, choose your package, and receive UC directly in your in-game mailbox in less than 60 seconds with anti-ban security.
+                Enter your Player ID, choose PUBG UC 24K+, Free Fire Diamonds or Yalla Ludo 25K-70K, and receive instantly in under 60 seconds. in your in-game mailbox in less than 60 seconds with anti-ban security.
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
