@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Diamond } from 'lucide-react';
 import { UCPackage } from '../types/store';
 import { formatPrice } from '../utils/currency';
 import { sound } from '../utils/audio';
 import { UCLogo } from './UCLogo';
 
-export const ProductCatalog: React.FC<any> = ({ packages, currency, onSelectPack }) => {
+interface ProductCatalogProps {
+  packages: UCPackage[];
+  currency: string;
+  onSelectPack: (pack: UCPackage) => void;
+  selectedCategory?: string;
+  onCategoryChange?: (cat: string) => void;
+}
+
+export const ProductCatalog: React.FC<ProductCatalogProps> = ({ packages, currency, onSelectPack, selectedCategory, onCategoryChange }) => {
   const [activeTab, setActiveTab] = useState<'uc' | 'freefire' | 'yalla'>('uc');
 
+  // Sync with App.tsx if passed
+  useEffect(() => {
+    if (selectedCategory === 'freefire') setActiveTab('freefire');
+    else if (selectedCategory === 'yalla') setActiveTab('yalla');
+    else if (selectedCategory === 'pubg' || selectedCategory === 'uc') setActiveTab('uc');
+  }, [selectedCategory]);
+
+  const handleTabChange = (tab: 'uc' | 'freefire' | 'yalla') => {
+    sound.playClick();
+    setActiveTab(tab);
+    if (onCategoryChange) {
+      if (tab === 'uc') onCategoryChange('pubg');
+      else onCategoryChange(tab);
+    }
+  };
+
   const filteredPacks = packages.filter((pkg: any) => {
-    if (activeTab === 'uc') return pkg.game === 'uc';
+    if (activeTab === 'uc') return pkg.game === 'uc' || pkg.game === 'pubg' || !pkg.game;
     if (activeTab === 'freefire') return pkg.game === 'freefire';
     if (activeTab === 'yalla') return pkg.game === 'yalla';
-    return false;
+    return true;
   });
 
   return (
@@ -26,14 +50,14 @@ export const ProductCatalog: React.FC<any> = ({ packages, currency, onSelectPack
             <h2 style={{ color: '#fff', fontWeight: 800, fontSize: '14px', textTransform: 'uppercase' }}>
               {activeTab==='uc' ? 'PUBG UC PACKS - FROM 24K' : activeTab==='freefire' ? 'FREE FIRE DIAMONDS' : 'YALLA LUDO DIAMONDS 25K-70K'}
             </h2>
-            <p style={{ color: '#8e9ac0', fontSize: '11px' }}>{filteredPacks.length} Packs Available</p>
+            <p style={{ color: '#8e9ac0', fontSize: '11px' }}>{filteredPacks.length} Packs Available - Time: {new Date().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '')}</p>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '6px', background: '#04091d', padding: '4px', borderRadius: '12px', border: '1px solid #1e2f69' }}>
-          <button onClick={() => { sound.playClick(); setActiveTab('uc'); }} style={{ padding: '6px 12px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', background: activeTab==='uc' ? '#ffcc00' : 'transparent', color: activeTab==='uc' ? '#000' : '#ccc', border: 'none', cursor: 'pointer' }}>🎮 UC (24K+)</button>
-          <button onClick={() => { sound.playClick(); setActiveTab('freefire'); }} style={{ padding: '6px 12px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', background: activeTab==='freefire' ? '#ffcc00' : 'transparent', color: activeTab==='freefire' ? '#000' : '#ccc', border: 'none', cursor: 'pointer' }}>🔥 Free Fire</button>
-          <button onClick={() => { sound.playClick(); setActiveTab('yalla'); }} style={{ padding: '6px 12px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', background: activeTab==='yalla' ? '#ffcc00' : 'transparent', color: activeTab==='yalla' ? '#000' : '#ccc', border: 'none', cursor: 'pointer' }}>🎲 Yalla 25K-70K</button>
+          <button onClick={() => handleTabChange('uc')} style={{ padding: '6px 12px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', background: activeTab==='uc' ? '#ffcc00' : 'transparent', color: activeTab==='uc' ? '#000' : '#ccc', border: 'none', cursor: 'pointer' }}>🎮 UC (24K+)</button>
+          <button onClick={() => handleTabChange('freefire')} style={{ padding: '6px 12px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', background: activeTab==='freefire' ? '#ffcc00' : 'transparent', color: activeTab==='freefire' ? '#000' : '#ccc', border: 'none', cursor: 'pointer' }}>🔥 Free Fire</button>
+          <button onClick={() => handleTabChange('yalla')} style={{ padding: '6px 12px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', background: activeTab==='yalla' ? '#ffcc00' : 'transparent', color: activeTab==='yalla' ? '#000' : '#ccc', border: 'none', cursor: 'pointer' }}>🎲 Yalla 25K-70K</button>
         </div>
       </div>
 
