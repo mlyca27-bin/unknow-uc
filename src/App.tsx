@@ -6,145 +6,92 @@ import { SettingsModal } from './components/SettingsModal';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderHistoryModal } from './components/OrderHistoryModal';
 import { Footer } from './components/Footer';
-import { AppSettings, OrderRecord, PlayerProfile, UCPackage } from './types/store';
-import { DEFAULT_SETTINGS, PRESET_PLAYERS, UC_PACKAGES } from './data/catalog';
+import { AppSettings, OrderRecord, UCPackage } from './types/store';
+import { DEFAULT_SETTINGS, UC_PACKAGES } from './data/catalog';
 import { sound } from './utils/audio';
 import { formatCurrentTimeDate } from './utils/datetime';
-import { AlertCircle, Zap, Shield, Sparkles } from 'lucide-react';
+import { AlertCircle, Shield, Sparkles } from 'lucide-react';
 
 export default function App() {
-  // Load settings from localStorage
   const [settings, setSettings] = useState<AppSettings>(() => {
     try {
-      const stored = localStorage.getItem('pubg_uc_settings');
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch {
-      // Fallback
-    }
+      const s = localStorage.getItem('pubg_uc_settings');
+      if (s) return JSON.parse(s);
+    } catch {}
     return DEFAULT_SETTINGS;
   });
-
-  // FIXED: Game Category State
-  const [selectedCategory, setSelectedCategory] = useState<string>('pubg');
-
-  // State for UID & Region
-  const [uid, setUid] = useState<string>(() => {
-    return localStorage.getItem('pubg_uc_uid') || '5123456783';
-  });
-  const [region, setRegion] = useState<string>(() => {
-    return localStorage.getItem('pubg_uc_region') || 'Global / Asia';
-  });
-
-  // Time Date (e.g. 29-10-2026 11:32 PM)
-  const [timeDate, setTimeDate] = useState<string>(() => {
-    return settings.customTimeDate || formatCurrentTimeDate();
-  });
-
-  // Currency
-  const [currency, setCurrency] = useState<string>(() => {
-    return localStorage.getItem('pubg_uc_currency') || 'AED';
-  });
-
-  // Sound enabled
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(settings.soundEnabled ?? true);
-
-  // Orders list
+  const [uid, setUid] = useState(() => localStorage.getItem('pubg_uc_uid') || '5123456783');
+  const [region, setRegion] = useState(() => localStorage.getItem('pubg_uc_region') || 'Global / Asia');
+  const [timeDate, setTimeDate] = useState(() => settings.customTimeDate || formatCurrentTimeDate());
+  const [currency, setCurrency] = useState(() => localStorage.getItem('pubg_uc_currency') || 'AED');
+  const [soundEnabled, setSoundEnabled] = useState(settings.soundEnabled ?? true);
   const [orders, setOrders] = useState<OrderRecord[]>(() => {
     try {
-      const stored = localStorage.getItem('pubg_uc_orders');
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch {
-      // Fallback
-    }
-    return [
-      {
-        id: 'ORD-781923',
-        timestamp: '10:14 AM',
-        uid: '5123456789',
-        username: 'BinRao_OP',
-        packTitle: '40500 UC (BEST)',
-        totalUC: 40500,
-        price: 1649,
-        currency: 'AED',
-        cardName: 'Golden VIP Card',
-        cardLast4: '1234',
-        status: 'success',
-        txHash: 'TX-PUBG-8910AB',
-      },
-    ];
+      const o = localStorage.getItem('pubg_uc_orders');
+      if (o) return JSON.parse(o);
+    } catch {}
+    return [{ id: 'ORD-781923', timestamp: '10:14 AM', uid: '5123456789', username: 'BinRao_OP', packTitle: '40500 UC (BEST)', totalUC: 40500, price: 1649, currency: 'AED', cardName: 'Golden VIP Card', cardLast4: '1234', status: 'success', txHash: 'TX-PUBG-8910AB' } as any];
   });
-
-  // Modals state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [selectedPackForCheckout, setSelectedPackForCheckout] = useState<UCPackage | null>(null);
   const [uidAlert, setUidAlert] = useState<string | null>(null);
 
-  // Sync settings changes to localStorage
-  useEffect(() => {
-    localStorage.setItem('pubg_uc_settings', JSON.stringify(settings));
-  }, [settings]);
-
-  // Sync orders to localStorage
-  useEffect(() => {
-    localStorage.setItem('pubg_uc_orders', JSON.stringify(orders));
-  }, [orders]);
-
-  // Sync currency to localStorage
-  useEffect(() => {
-    localStorage.setItem('pubg_uc_currency', currency);
-  }, [currency]);
-
-  // Sync UID & Region to localStorage
-  useEffect(() => {
-    localStorage.setItem('pubg_uc_uid', uid);
-  }, [uid]);
-
-  useEffect(() => {
-    localStorage.setItem('pubg_uc_region', region);
-  }, [region]);
-
-  useEffect(() => {
-    if (settings.customTimeDate) {
-      setTimeDate(settings.customTimeDate);
-    }
-  }, [settings.customTimeDate]);
+  useEffect(() => { localStorage.setItem('pubg_uc_settings', JSON.stringify(settings)); }, [settings]);
+  useEffect(() => { localStorage.setItem('pubg_uc_orders', JSON.stringify(orders)); }, [orders]);
+  useEffect(() => { localStorage.setItem('pubg_uc_currency', currency); }, [currency]);
+  useEffect(() => { localStorage.setItem('pubg_uc_uid', uid); }, [uid]);
+  useEffect(() => { localStorage.setItem('pubg_uc_region', region); }, [region]);
 
   const handleUpdateTime = () => {
-    const updated = formatCurrentTimeDate();
-    setTimeDate(updated);
-    setSettings((prev) => ({ ...prev, customTimeDate: updated }));
+    const u = formatCurrentTimeDate();
+    setTimeDate(u);
+    setSettings((p) => ({ ...p, customTimeDate: u }));
   };
-
-  const handleSaveSettings = (newSettings: AppSettings) => {
-    setSettings(newSettings);
-    if (newSettings.customTimeDate) {
-      setTimeDate(newSettings.customTimeDate);
-    }
-    setSoundEnabled(newSettings.soundEnabled);
+  const handleSaveSettings = (ns: AppSettings) => {
+    setSettings(ns);
+    if (ns.customTimeDate) setTimeDate(ns.customTimeDate);
+    setSoundEnabled(ns.soundEnabled);
   };
-
   const handleToggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    setSettings((prev) => ({ ...prev, soundEnabled: next }));
-    if (next) sound.playClick();
+    const n = !soundEnabled;
+    setSoundEnabled(n);
+    setSettings((p) => ({ ...p, soundEnabled: n }));
+    if (n) sound.playClick();
   };
-
   const handleSelectPack = (pack: UCPackage) => {
     if (!uid.trim()) {
       sound.playFailed();
       setUidAlert('⚠️ Pehle UID lagao! Please enter your Character UID first.');
-      const el = document.getElementById('pubgUid');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.focus();
-      }
       return;
     }
     setUidAlert(null);
     setSelectedPackForCheckout(pack);
+  };
+  const handleOrderCompleted = (no: OrderRecord) => setOrders((prev) => [no, ...prev]);
+  const handleClearHistory = () => setOrders([]);
+
+  return (
+    <div className="min-h-screen bg-[#050b1e] text-slate-100 flex flex-col font-sans">
+      <Header onOpenSettings={() => { sound.playClick(); setIsSettingsOpen(true); }} onOpenHistory={() => { sound.playClick(); setIsHistoryOpen(true); }} currency={currency} onChangeCurrency={(c) => { sound.playClick(); setCurrency(c); }} soundEnabled={soundEnabled} onToggleSound={handleToggleSound} orderCount={orders.length} />
+      <main className="flex-1 max-w-5xl w-full mx-auto px-3 py-5 space-y-5">
+        {uidAlert && <div className="bg-red-950 border-2 border-red-500 text-red-200 px-4 py-3 rounded-xl flex items-center gap-2 font-bold text-sm"><AlertCircle className="w-5 h-5" />{uidAlert}<button onClick={() => setUidAlert(null)} className="ml-auto bg-red-800 px-3 py-1 rounded-lg">OK</button></div>}
+        <div className="rounded-2xl bg-gradient-to-r from-[#0c1b48] via-[#14296b] to-[#0c1b48] border border-[#233878] p-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs font-black uppercase"><Sparkles className="w-3.5 h-3.5" />Season Special • 3 Games</div>
+          <h2 className="text-2xl font-black text-white mt-2">INSTANT TOP-UP PORTAL • PUBG UC • FREE FIRE • YALLA LUDO</h2>
+        </div>
+        <PlayerVerification uid={uid} onUidChange={(v) => { setUid(v); if (v.trim()) setUidAlert(null); }} savedUsername={settings.username} paymentResult={settings.paymentResult} region={region} onSelectRegion={setRegion} timeDate={timeDate} onUpdateTime={handleUpdateTime} onSelectPreset={(pUid) => { setUid(pUid); setUidAlert(null); }} />
+        <ProductCatalog packages={UC_PACKAGES} currency={currency} onSelectPack={handleSelectPack} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-3 flex items-center gap-3"><div className="font-bold text-white">Instant UID Delivery</div></div>
+          <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-3 flex items-center gap-3"><Shield className="w-4 h-4 text-emerald-400" /><div className="font-bold text-white">100% Anti-Ban</div></div>
+          <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-3 flex items-center gap-3"><div className="font-bold text-white">Multi-Card & Golden VIP</div></div>
+        </div>
+      </main>
+      <Footer />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} settings={settings} onSaveSettings={handleSaveSettings} />
+      <CheckoutModal isOpen={selectedPackForCheckout !== null} onClose={() => setSelectedPackForCheckout(null)} selectedPack={selectedPackForCheckout} uid={uid} savedUsername={settings.username} settings={settings} currency={currency} onOrderCompleted={handleOrderCompleted} />
+      <OrderHistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} orders={orders} onClearHistory={handleClearHistory} />
+    </div>
+  );
+}
