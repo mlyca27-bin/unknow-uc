@@ -235,6 +235,7 @@ export default function App() {
               setUid(val);
               if (val.trim()) setUidAlert(null);
             }}
+            selectedGame={selectedCategory} 
             savedUsername={settings.username}
             paymentResult={settings.paymentResult}
             region={region}
