@@ -1,100 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { Header } from './components/Header';
-import { PlayerVerification } from './components/PlayerVerification';
-import { ProductCatalog } from './components/ProductCatalog';
-import { SettingsModal } from './components/SettingsModal';
-import { CheckoutModal } from './components/CheckoutModal';
-import { OrderHistoryModal } from './components/OrderHistoryModal';
-import { Footer } from './components/Footer';
-import { AppSettings, OrderRecord, UCPackage } from './types/store';
-import { DEFAULT_SETTINGS, UC_PACKAGES } from './data/catalog';
-import { sound } from './utils/audio';
-import { formatCurrentTimeDate } from './utils/datetime';
-import { AlertCircle, Shield, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+
+const PACKS = [
+  { id: 1, title: '60 UC', uc: 60, price: 4, bonus: 0, best: false },
+  { id: 2, title: '325 UC', uc: 325, price: 20, bonus: 25, best: false },
+  { id: 3, title: '660 UC', uc: 660, price: 40, bonus: 60, best: true },
+  { id: 4, title: '1800 UC', uc: 1800, price: 99, bonus: 300, best: false },
+  { id: 5, title: '3850 UC', uc: 3850, price: 199, bonus: 850, best: false },
+  { id: 6, title: '8100 UC', uc: 8100, price: 399, bonus: 2100, best: false },
+  { id: 7, title: '40500 UC (BEST)', uc: 40500, price: 1649, bonus: 15000, best: true },
+];
 
 export default function App() {
-  const [settings, setSettings] = useState<AppSettings>(() => {
-    try {
-      const s = localStorage.getItem('pubg_uc_settings');
-      if (s) return JSON.parse(s);
-    } catch {}
-    return DEFAULT_SETTINGS;
+  const [uid, setUid] = useState(localStorage.getItem('pubg_uid') || '');
+  const [selected, setSelected] = useState<any>(null);
+  const [orders, setOrders] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem('orders') || '[]') } catch { return [] }
   });
-  const [uid, setUid] = useState(() => localStorage.getItem('pubg_uc_uid') || '5123456783');
-  const [region, setRegion] = useState(() => localStorage.getItem('pubg_uc_region') || 'Global / Asia');
-  const [timeDate, setTimeDate] = useState<string>(() => {
-    try { return settings.customTimeDate || formatCurrentTimeDate(); } 
-    catch { return formatCurrentTimeDate(); }
-  });
-  const [currency, setCurrency] = useState(() => localStorage.getItem('pubg_uc_currency') || 'AED');
-  const [soundEnabled, setSoundEnabled] = useState(settings.soundEnabled ?? true);
-  const [orders, setOrders] = useState<OrderRecord[]>(() => {
-    try {
-      const o = localStorage.getItem('pubg_uc_orders');
-      if (o) return JSON.parse(o);
-    } catch {}
-    return [{ id: 'ORD-781923', timestamp: '10:14 AM', uid: '5123456789', username: 'BinRao_OP', packTitle: '40500 UC (BEST)', totalUC: 40500, price: 1649, currency: 'AED', cardName: 'Golden VIP Card', cardLast4: '1234', status: 'success', txHash: 'TX-PUBG-8910AB' } as any];
-  });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [selectedPackForCheckout, setSelectedPackForCheckout] = useState<UCPackage | null>(null);
-  const [uidAlert, setUidAlert] = useState<string | null>(null);
 
-  useEffect(() => { try { localStorage.setItem('pubg_uc_settings', JSON.stringify(settings)); } catch {} }, [settings]);
-  useEffect(() => { try { localStorage.setItem('pubg_uc_orders', JSON.stringify(orders)); } catch {} }, [orders]);
-  useEffect(() => { localStorage.setItem('pubg_uc_currency', currency); }, [currency]);
-  useEffect(() => { localStorage.setItem('pubg_uc_uid', uid); }, [uid]);
-  useEffect(() => { localStorage.setItem('pubg_uc_region', region); }, [region]);
-
-  const handleUpdateTime = () => {
-    const u = formatCurrentTimeDate();
-    setTimeDate(u);
-    setSettings((p) => ({ ...p, customTimeDate: u } as any));
+  const buy = (pack: any) => {
+    if (!uid.trim()) { alert('⚠️ Pehle UID dalo!'); return; }
+    const order = { id: 'ORD-'+Date.now(), pack: pack.title, uc: pack.uc, uid, time: new Date().toLocaleTimeString() };
+    const newOrders = [order, ...orders];
+    setOrders(newOrders);
+    localStorage.setItem('orders', JSON.stringify(newOrders));
+    localStorage.setItem('pubg_uid', uid);
+    setSelected(null);
+    alert(`✅ Order Success!\n${pack.title} - ${pack.uc} UC\nUID: ${uid}\nOrder ID: ${order.id}`);
   };
-  const handleSaveSettings = (ns: AppSettings) => {
-    setSettings(ns);
-    if ((ns as any).customTimeDate) setTimeDate((ns as any).customTimeDate);
-    setSoundEnabled(ns.soundEnabled);
-  };
-  const handleToggleSound = () => {
-    const n = !soundEnabled;
-    setSoundEnabled(n);
-    setSettings((p) => ({ ...p, soundEnabled: n }));
-    try { if (n) sound.playClick(); } catch {}
-  };
-  const handleSelectPack = (pack: UCPackage) => {
-    if (!uid.trim()) {
-      try { sound.playFailed(); } catch {}
-      setUidAlert('⚠️ Pehle UID lagao! Please enter your Character UID first.');
-      return;
-    }
-    setUidAlert(null);
-    setSelectedPackForCheckout(pack);
-  };
-  const handleOrderCompleted = (no: OrderRecord) => setOrders((prev) => [no, ...prev]);
-  const handleClearHistory = () => setOrders([]);
 
   return (
-    <div className="min-h-screen bg-[#050b1e] text-slate-100 flex flex-col font-sans">
-      <Header onOpenSettings={() => { try{ sound.playClick(); }catch{} setIsSettingsOpen(true); }} onOpenHistory={() => { try{ sound.playClick(); }catch{} setIsHistoryOpen(true); }} currency={currency} onChangeCurrency={(c) => { try{ sound.playClick(); }catch{} setCurrency(c); }} soundEnabled={soundEnabled} onToggleSound={handleToggleSound} orderCount={orders.length} />
-      <main className="flex-1 max-w-5xl w-full mx-auto px-3 py-5 space-y-5">
-        {uidAlert && <div className="bg-red-950 border-2 border-red-500 text-red-200 px-4 py-3 rounded-xl flex items-center gap-2 font-bold text-sm"><AlertCircle className="w-5 h-5" />{uidAlert}<button onClick={() => setUidAlert(null)} className="ml-auto bg-red-800 px-3 py-1 rounded-lg">OK</button></div>}
-        <div className="rounded-2xl bg-gradient-to-r from-[#0c1b48] via-[#14296b] to-[#0c1b48] border border-[#233878] p-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs font-black uppercase"><Sparkles className="w-3.5 h-3.5" />Season Special • 3 Games</div>
-          <h2 className="text-2xl font-black text-white mt-2">INSTANT TOP-UP PORTAL • PUBG UC • FREE FIRE • YALLA LUDO</h2>
+    <div className="min-h-screen bg-[#050b1e] text-white flex flex-col">
+      <header className="bg-[#0a122e] border-b border-[#1b2b5d] p-4 flex justify-between items-center">
+        <h1 className="font-black text-xl">🎮 UNKNOWN UC STORE</h1>
+        <div className="bg-[#14296b] px-3 py-1 rounded-full text-xs">Orders: {orders.length}</div>
+      </header>
+
+      <main className="max-w-5xl mx-auto w-full p-4 space-y-5">
+        <div className="bg-gradient-to-r from-[#0c1b48] to-[#14296b] border border-[#233878] rounded-2xl p-5">
+          <h2 className="text-2xl font-black">PUBG UC INSTANT TOP-UP</h2>
+          <p className="text-sm text-slate-300 mt-1">Fast • Safe • 100% Anti-Ban • 24/7</p>
         </div>
-        <PlayerVerification uid={uid} onUidChange={(v) => { setUid(v); if (v.trim()) setUidAlert(null); }} savedUsername={settings.username} paymentResult={settings.paymentResult} region={region} onSelectRegion={setRegion} timeDate={timeDate} onUpdateTime={handleUpdateTime} onSelectPreset={(pUid) => { setUid(pUid); setUidAlert(null); }} />
-        <ProductCatalog packages={UC_PACKAGES} currency={currency} onSelectPack={handleSelectPack} />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-3 flex items-center gap-3"><div className="font-bold text-white">Instant UID Delivery</div></div>
-          <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-3 flex items-center gap-3"><Shield className="w-4 h-4 text-emerald-400" /><div className="font-bold text-white">100% Anti-Ban</div></div>
-          <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-3 flex items-center gap-3"><div className="font-bold text-white">Multi-Card & Golden VIP</div></div>
+
+        <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-4">
+          <label className="text-sm font-bold">Your PUBG Character UID *</label>
+          <input value={uid} onChange={e=>setUid(e.target.value)} placeholder="5123456783" className="w-full mt-2 bg-[#050b1e] border border-[#233878] rounded-lg p-3 text-white outline-none" />
+          <p className="text-xs text-slate-400 mt-2">UID Profile > Settings > Copy</p>
         </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {PACKS.map(pack => (
+            <div key={pack.id} className={`bg-[#0a122e] border rounded-xl p-4 relative ${pack.best ? 'border-amber-400' : 'border-[#1b2b5d]'}`}>
+              {pack.best && <span className="absolute -top-2 -right-2 bg-amber-400 text-black text-[10px] font-black px-2 py-1 rounded-full">BEST</span>}
+              <div className="font-black text-lg">{pack.title}</div>
+              <div className="text-amber-300 font-bold">{pack.uc + pack.bonus} UC</div>
+              {pack.bonus>0 && <div className="text-xs text-emerald-400">+{pack.bonus} Bonus</div>}
+              <div className="text-white font-black mt-2">AED {pack.price}</div>
+              <button onClick={()=>setSelected(pack)} className="w-full mt-3 bg-[#2a4bff] hover:bg-[#1a3aef] py-2 rounded-lg font-bold text-sm">SELECT</button>
+            </div>
+          ))}
+        </div>
+
+        {orders.length>0 && (
+          <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-4">
+            <h3 className="font-bold mb-2">Recent Orders</h3>
+            {orders.slice(0,5).map(o=>(
+              <div key={o.id} className="text-xs bg-[#050b1e] p-2 rounded-lg mb-2 flex justify-between"><span>{o.pack} - {o.uid}</span><span>{o.time}</span></div>
+            ))}
+          </div>
+        )}
       </main>
-      <Footer />
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} settings={settings} onSaveSettings={handleSaveSettings} />
-      <CheckoutModal isOpen={selectedPackForCheckout !== null} onClose={() => setSelectedPackForCheckout(null)} selectedPack={selectedPackForCheckout} uid={uid} savedUsername={settings.username} settings={settings} currency={currency} onOrderCompleted={handleOrderCompleted} />
-      <OrderHistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} orders={orders} onClearHistory={handleClearHistory} />
+
+      <footer className="bg-[#0a122e] border-t border-[#1b2b5d] p-4 text-center text-xs text-slate-400 mt-auto">© 2026 UNKNOWN UC - Instant Delivery • Secure Payment</footer>
+
+      {selected && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-[#0a122e] border border-[#233878] rounded-2xl p-5 w-full max-w-sm">
+            <h3 className="font-black text-xl">Confirm Order</h3>
+            <p className="mt-3 text-sm">Pack: <b>{selected.title}</b></p>
+            <p className="text-sm">Total UC: <b className="text-amber-300">{selected.uc + selected.bonus}</b></p>
+            <p className="text-sm">UID: <b>{uid}</b></p>
+            <p className="text-sm">Price: <b>AED {selected.price}</b></p>
+            <div className="flex gap-2 mt-5">
+              <button onClick={()=>setSelected(null)} className="flex-1 bg-slate-700 py-2.5 rounded-xl font-bold">Cancel</button>
+              <button onClick={()=>buy(selected)} className="flex-1 bg-[#2a4bff] py-2.5 rounded-xl font-bold">Pay & Buy</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
