@@ -1,864 +1,191 @@
-
-import { useEffect, useState } from 'react'
-
-const packs = [25000, 50000, 75000, 100000, 125000, 150000, 175000, 200000]
-
-const defaultSettings = {
-  pubgName: 'BINRAO 876',
-  ffName: 'BINRAO FF',
-  uid1: '5991827364',
-  uid2: '5829104821',
-  uid3: '5123456789',
-  pubgBanner: 'DEAL STORE - PUBG UC STORE',
-  ffBanner: 'DEAL STORE - FREE FIRE DIAMONDS STORE',
-  visa: 'VISA PLATINUM',
-  master: 'MASTERCARD WORLD',
-  amex: 'AMERICAN EXPRESS',
-  vip: 'GOLDEN VIP CARD',
-  wapp: '+9715537374',
-  tele: '@BINRAO876',
-  txnType: 'failed',
-  txnFailReason: 'Transaction declined.',
-  txnSuccessTitle: 'PAYMENT SUCCESS!',
-  txnSuccessMsg: 'Your order has been confirmed.',
-  txnPendingMsg: 'Your order is being verified.',
-  minPack: '25000',
-  maxPack: '200000',
-  vipFee: '0% FEE',
-  normalFee: '3% FEE',
-  refundPolicy: 'Please check your UID before ordering.',
-  lowLevelMsg: 'Please contact support.'
-}
-
-const defaultContent = {
-  storeName: 'DEAL STORE',
-  tagline: 'YOUR GAMING STORE',
-  about: 'Welcome to Deal Store. Your gaming store for PUBG UC and Free Fire Diamonds.',
-  contact: 'Contact our team for support and information.',
-  privacy: 'We respect your privacy. Never share passwords.',
-  terms: 'Please verify your Player UID before ordering.',
-  refund: 'Please contact support for incorrect orders.',
-  support: 'Our support team is here to help you.',
-  team: 'BIN RAO - Store Developer',
-  developer: 'BIN RAO',
-  copyright: '© 2026 DEAL STORE. All Rights Reserved.',
-  notice: 'Demo simulation. No real payment is processed.'
-}
-
-type Settings = typeof defaultSettings
-type Content = typeof defaultContent
-type Method = 'visa' | 'master' | 'amex' | 'vip'
+import { useState } from 'react'
 
 export default function App() {
-  const [game, setGame] = useState<'pubg' | 'ff'>('pubg')
+  const [game, setGame] = useState('pubg')
+  const [sel, setSel] = useState<number | null>(0)
   const [uid, setUid] = useState('3144989462')
-  const [sel, setSel] = useState(0)
   const [showSet, setShowSet] = useState(false)
   const [showPay, setShowPay] = useState(false)
   const [showTxn, setShowTxn] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [payMethod, setPayMethod] = useState<Method>('vip')
-  const [settings, setSettings] = useState<Settings>(() => {
-    try {
-      const saved = localStorage.getItem('deal-store-settings')
-      return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings
-    } catch {
-      return defaultSettings
-    }
+  const [payMethod, setPayMethod] = useState('vip')
+  const [cvc, setCvc] = useState('')
+  const [policyTab, setPolicyTab] = useState<string | null>(null)
+
+  const [s, setS] = useState({
+    pubgName: 'BINRAO 876', ffName: 'BINRAO FF',
+    uid1: '5991827364', uid2: '5829104821', uid3: '5123456789',
+    pubgBanner: 'DEAL STORE - OFFICIAL PUBG UC STORE',
+    ffBanner: 'DEAL STORE - OFFICIAL FREE FIRE DIAMONDS STORE',
+    visa: '4242', master: '8888', amex: '1001', vip: '1234',
+    wapp: '+9715537374', tele: '@BINRAO876',
+    txnType: 'failed', 
+    txnFailReason: 'Transaction declined by the small pack issuer or ID. Reason: Your level is too low please buy another big pack.',
+    txnSuccessTitle: 'PAYMENT SUCCESS!', 
+    txnSuccessMsg: 'Your order will be delivered in 5-30 Minutes',
+    txnPendingMsg: 'Payment is being verified...',
+    minPack: '25000', maxPack: '200000', vipFee: '0% FEE', normalFee: '3% FEE',
+    refundPolicy: 'Wrong UID = No Refund',
+    lowLevelMsg: 'Transaction declined by the small pack issuer or ID.',
   })
-  const [content, setContent] = useState<Content>(() => {
-    try {
-      const saved = localStorage.getItem('deal-store-content')
-      return saved ? { ...defaultContent, ...JSON.parse(saved) } : defaultContent
-    } catch {
-      return defaultContent
-    }
-  })
 
-  useEffect(() => {
-    localStorage.setItem('deal-store-settings', JSON.stringify(settings))
-  }, [settings])
+  // 8 PACKS ONLY - 25K TO 200K
+  const packs = [25000, 50000, 75000, 100000, 125000, 150000, 175000, 200000]
+  const getPrice = (uc:number) => Math.round(uc * 0.0406)
+  const selectedPack = sel !== null ? packs[sel] : packs[0]
+  const selectedPrice = getPrice(selectedPack)
 
-  useEffect(() => {
-    localStorage.setItem('deal-store-content', JSON.stringify(content))
-  }, [content])
-
-  const isPubg = game === 'pubg'
-
-  const theme = isPubg
-    ? {
-        main: '#2563eb',
-        dark: '#07152f',
-        deeper: '#030b1c',
-        border: '#3b82f6',
-        glow: 'rgba(37,99,235,.25)'
-      }
-    : {
-        main: '#dc2626',
-        dark: '#300909',
-        deeper: '#160303',
-        border: '#ef4444',
-        glow: 'rgba(220,38,38,.25)'
-      }
-
-  const gameName = isPubg ? 'PUBG UC' : 'FREE FIRE'
-  const currency = isPubg ? 'UC' : 'DIAMONDS'
-  const playerName = isPubg ? settings.pubgName : settings.ffName
-  const banner = isPubg ? settings.pubgBanner : settings.ffBanner
-  const selectedPack = packs[sel]
-
-  const updateSetting = (key: keyof Settings, value: string) => {
-    setSettings(old => ({ ...old, [key]: value }))
-  }
-
-  const updateContent = (key: keyof Content, value: string) => {
-    setContent(old => ({ ...old, [key]: value }))
-  }
-
-  const openPayment = (index: number) => {
-    setSel(index)
-    setPayMethod('vip')
-    setShowPay(true)
-  }
-
-  const startPaymentSimulation = () => {
-    if (loading) return
-
+  const payNow = () => {
+    if(cvc.length < 3){ alert('CVC daalo'); return; }
+    setShowPay(false)
     setLoading(true)
-
-    window.setTimeout(() => {
-      setLoading(false)
-      setShowPay(false)
-      setShowTxn(true)
-    }, 3000)
+    setTimeout(()=>{ setLoading(false); setShowTxn(true); }, 3000)
   }
 
-  const closePayment = () => {
-    if (!loading) setShowPay(false)
+  const policies = {
+    about: { t: 'About Us', d: 'DEAL STORE - Trusted gaming store. 8 Packs from 25K to 200K for PUBG UC and Free Fire Diamonds. Instant delivery 5-30 min.' },
+    privacy: { t: 'Privacy Policy', d: 'We never share your UID. No password needed. Safe & secure. UID only for delivery.' },
+    terms: { t: 'Terms', d: '1. Check UID 2. Wrong UID = No Refund 3. 8 Packs 25K-200K 4. Delivery 5-30 min' },
+    refund: { t: 'Refund Policy', d: 'Wrong UID = No Refund. If not delivered in 1 hour contact WhatsApp.' },
+    contact: { t: 'Contact', d: `WhatsApp: ${s.wapp} | Telegram: ${s.tele} | 24/7 Support` },
+    delivery: { t: 'Delivery', d: '5-30 Minutes instant delivery to your UID. 8 Packs 25K to 200K available.' },
   }
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    boxSizing: 'border-box',
-    padding: 11,
-    borderRadius: 8,
-    background: '#080f20',
-    color: 'white',
-    border: '1px solid #334155',
-    outline: 'none',
-    fontSize: 13
-  }
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: 12,
-    color: '#cbd5e1',
-    marginBottom: 5,
-    fontWeight: 700
-  }
-
-  const settingFields: { key: keyof Settings; label: string }[] = [
-    { key: 'pubgName', label: '1. PUBG Player Name' },
-    { key: 'ffName', label: '2. Free Fire Player Name' },
-    { key: 'uid1', label: '3. Saved UID 1' },
-    { key: 'uid2', label: '4. Saved UID 2' },
-    { key: 'uid3', label: '5. Saved UID 3' },
-    { key: 'pubgBanner', label: '6. PUBG Banner' },
-    { key: 'ffBanner', label: '7. FF Banner' },
-    { key: 'visa', label: '8. Visa Display' },
-    { key: 'master', label: '9. Mastercard Display' },
-    { key: 'amex', label: '10. Amex Display' },
-    { key: 'vip', label: '11. VIP Display' },
-    { key: 'wapp', label: '12. WhatsApp Number' },
-    { key: 'tele', label: '13. Telegram Username' },
-    { key: 'txnFailReason', label: '14. Failure Reason' },
-    { key: 'txnSuccessTitle', label: '15. Success Title' },
-    { key: 'txnSuccessMsg', label: '16. Success Message' },
-    { key: 'txnPendingMsg', label: '17. Pending Message' },
-    { key: 'minPack', label: '18. Minimum Pack' },
-    { key: 'maxPack', label: '19. Maximum Pack' },
-    { key: 'vipFee', label: '20. VIP Fee' },
-    { key: 'normalFee', label: '21. Normal Fee' },
-    { key: 'refundPolicy', label: '22. Refund Policy' },
-    { key: 'lowLevelMsg', label: '23. Support Message' }
-  ]
-
-  const contentFields: { key: keyof Content; label: string }[] = [
-    { key: 'storeName', label: 'Store Name' },
-    { key: 'tagline', label: 'Tagline' },
-    { key: 'about', label: 'About Us' },
-    { key: 'contact', label: 'Contact Us' },
-    { key: 'privacy', label: 'Privacy Policy' },
-    { key: 'terms', label: 'Terms & Conditions' },
-    { key: 'refund', label: 'Refund Policy' },
-    { key: 'support', label: 'Customer Support' },
-    { key: 'team', label: 'Team Members' },
-    { key: 'developer', label: 'Developer Name' },
-    { key: 'copyright', label: 'Copyright' },
-    { key: 'notice', label: 'Website Notice' }
-  ]
-
-  const methods: {
-    id: Method
-    name: string
-    display: string
-    fee: string
-  }[] = [
-    { id: 'visa', name: 'Visa Platinum', display: settings.visa, fee: settings.normalFee },
-    { id: 'master', name: 'Mastercard World', display: settings.master, fee: settings.normalFee },
-    { id: 'amex', name: 'American Express', display: settings.amex, fee: settings.normalFee },
-    { id: 'vip', name: 'Golden VIP Card', display: settings.vip, fee: settings.vipFee }
-  ]
-
-  const isVip = payMethod === 'vip'
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: theme.deeper,
-      color: '#fff',
-      fontFamily: 'Arial, sans-serif',
-      paddingBottom: 20
-    }}>
+    <div style={{background:'#05070d', color:'#fff', minHeight:'100vh', fontFamily:'system-ui'}}>
+      <div style={{display:'flex', justifyContent:'space-between', padding:12, background:'#0e1525', borderBottom:'1px solid #1e293b', position:'sticky', top:0, zIndex:10}}>
+        <div style={{display:'flex', gap:8}}>
+          <button onClick={()=>{setGame('pubg'); setSel(0)}} style={{padding:'9px 16px', borderRadius:10, fontWeight:900, border:'1px solid #334155', background: game==='pubg'?'#fbbf24':'#1e293b', color: game==='pubg'?'#000':'#fff'}}>PUBG UC</button>
+          <button onClick={()=>{setGame('ff'); setSel(0)}} style={{padding:'9px 16px', borderRadius:10, fontWeight:900, border:'1px solid #334155', background: game==='ff'?'#ef4444':'#1e293b', color:'#fff'}}>FREE FIRE</button>
+        </div>
+        <button onClick={()=>setShowSet(true)} style={{padding:'9px 14px', borderRadius:10, border:'1px solid #fbbf24', background:'#1e293b', color:'#fbbf24', fontWeight:800}}>⚙ Setting</button>
+      </div>
 
-      <header style={{
-        background: theme.dark,
-        borderBottom: `2px solid ${theme.main}`,
-        padding: '14px 4%',
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 10,
-        flexWrap: 'wrap'
-      }}>
-        <div>
-          <div style={{ fontWeight: 1000, fontSize: 21 }}>
-            {content.storeName}
-          </div>
-          <div style={{ fontSize: 10, color: '#94a3b8' }}>
-            {content.tagline}
-          </div>
+      <div style={{maxWidth:1100, margin:'0 auto', padding:14}}>
+        <div style={{background: game==='pubg'?'linear-gradient(135deg,#1a1a00,#b45309,#fbbf24)':'linear-gradient(135deg,#1a0033,#7c3aed,#ef4444)', borderRadius:16, padding:16, border:'1px solid #fbbf24'}}>
+          <div style={{fontWeight:900, fontSize:15}}>{game==='pubg'?s.pubgBanner:s.ffBanner}</div>
+          <div style={{fontSize:11, marginTop:4}}>⚡ 8 PACKS • 25K - 200K • 5-30 Min Delivery • ✅ Safe</div>
         </div>
 
-        <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
-          <button onClick={() => { setGame('pubg'); setSel(0) }}
-            style={{
-              padding: 10,
-              borderRadius: 8,
-              border: '1px solid #60a5fa',
-              background: isPubg ? '#2563eb' : '#172033',
-              color: '#fff',
-              fontWeight: 900
-            }}>
-            PUBG UC
-          </button>
-
-          <button onClick={() => { setGame('ff'); setSel(0) }}
-            style={{
-              padding: 10,
-              borderRadius: 8,
-              border: '1px solid #f87171',
-              background: !isPubg ? '#dc2626' : '#172033',
-              color: '#fff',
-              fontWeight: 900
-            }}>
-            FREE FIRE
-          </button>
-
-          <button onClick={() => setShowSet(true)}
-            style={{
-              padding: 10,
-              borderRadius: 8,
-              border: '1px solid #fbbf24',
-              background: '#172033',
-              color: '#fbbf24',
-              fontWeight: 900
-            }}>
-            ⚙ SETTINGS
-          </button>
+        <div style={{background:'#0e1525', border:'1px solid #1e293b', borderRadius:14, padding:14, marginTop:14}}>
+          <input value={uid} onChange={e=>setUid(e.target.value)} placeholder="Enter UID" style={{width:'100%', padding:13, borderRadius:10, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+          <div style={{display:'flex', gap:8, marginTop:10}}>{[s.uid1,s.uid2,s.uid3].map(v=><button key={v} onClick={()=>setUid(v)} style={{padding:'6px 12px', borderRadius:20, background:'#1e293b', border:'1px solid #334155', color:'#94a3b8', fontSize:11}}>{v}</button>)}</div>
+          {uid.length>7 && <div style={{marginTop:10, background:'#052e16', border:'1px solid #22c55e', padding:'8px 12px', borderRadius:8, fontSize:13}}>✅ {game==='pubg'?s.pubgName:s.ffName} | UID: {uid}</div>}
         </div>
-      </header>
 
-      <main style={{ maxWidth: 1100, margin: 'auto', padding: 15 }}>
-
-        <section style={{
-          padding: 25,
-          borderRadius: 16,
-          marginTop: 12,
-          background: `linear-gradient(120deg, ${theme.dark}, ${theme.main})`,
-          border: `1px solid ${theme.border}`,
-          boxShadow: `0 8px 30px ${theme.glow}`
-        }}>
-          <div style={{ fontSize: 11, letterSpacing: 2, fontWeight: 900 }}>
-            GAMING STORE
-          </div>
-          <h1 style={{ fontSize: 27 }}>{banner}</h1>
-          <p style={{ fontSize: 13 }}>Fast Support • Easy UID Entry • {gameName}</p>
-        </section>
-
-        <section style={{
-          marginTop: 16,
-          background: theme.dark,
-          border: `1px solid ${theme.border}`,
-          padding: 15,
-          borderRadius: 13
-        }}>
-          <label style={labelStyle}>PLAYER ID / UID</label>
-          <input
-            value={uid}
-            onChange={e => setUid(e.target.value)}
-            placeholder="Enter your Player UID"
-            style={inputStyle}
-          />
-
-          <div style={{ display: 'flex', gap: 7, marginTop: 10, flexWrap: 'wrap' }}>
-            {[settings.uid1, settings.uid2, settings.uid3].filter(Boolean).map((v, i) => (
-              <button key={i} onClick={() => setUid(v)}
-                style={{
-                  padding: 7,
-                  background: '#172033',
-                  color: '#cbd5e1',
-                  border: '1px solid #475569',
-                  borderRadius: 20
-                }}>
-                {v}
-              </button>
-            ))}
-          </div>
-          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 8 }}>
-            Game: {gameName}
-          </div>
-        </section>
-
-        <section style={{
-          marginTop: 17,
-          background: theme.dark,
-          border: `1px solid ${theme.border}`,
-          borderRadius: 13,
-          padding: 14
-        }}>
-          <h2 style={{ fontSize: 18 }}>
-            {isPubg ? '🪙 PUBG UC PACKAGES' : '💎 FREE FIRE DIAMONDS'}
-          </h2>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(145px, 1fr))',
-            gap: 11
-          }}>
-            {packs.map((amount, i) => (
-              <div key={amount} onClick={() => setSel(i)}
-                style={{
-                  padding: 13,
-                  textAlign: 'center',
-                  borderRadius: 11,
-                  background: '#080f20',
-                  border: sel === i ? `2px solid ${theme.main}` : '1px solid #334155',
-                  cursor: 'pointer',
-                  boxShadow: sel === i ? `0 0 14px ${theme.glow}` : 'none'
-                }}>
-                <div style={{ fontSize: 32 }}>
-                  {isPubg ? '🪙' : '💎'}
-                </div>
-
-                <div style={{ fontSize: 17, fontWeight: 900 }}>
-                  {amount.toLocaleString()}
-                </div>
-
-                <div style={{ color: '#94a3b8', fontSize: 11 }}>
-                  {currency}
-                </div>
-
-                <button onClick={e => {
-                  e.stopPropagation()
-                  openPayment(i)
-                }}
-                  style={{
-                    width: '100%',
-                    padding: 10,
-                    marginTop: 12,
-                    border: 0,
-                    borderRadius: 7,
-                    background: theme.main,
-                    color: '#fff',
-                    fontWeight: 900
-                  }}>
-                  BUY NOW
-                </button>
+        <div style={{background:'#000', padding:12, borderRadius:12, marginTop:14, border:'1px solid #1e293b'}}>
+          <div style={{fontWeight:900, fontSize:14, marginBottom:12}}>🪙 {game==='pubg'?'PUBG UC':'FREE FIRE DIAMONDS'} - 8 PACKS ONLY (25K TO 200K)</div>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:10}}>
+            {packs.map((amount,i)=>(
+              <div key={i} onClick={()=>setSel(i)} style={{background:'#000', border: sel===i?'2px solid #22c55e':'2px solid #7f1d1d', borderRadius:10, padding:8, textAlign:'center'}}>
+                <div style={{height:65, background:'#111', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', fontSize:26}}>{game==='pubg'?'🪙':'💎'}</div>
+                <div style={{fontWeight:900, fontSize:15, marginTop:6}}>{amount.toLocaleString()} {game==='pubg'?'UC':'DIAM'}</div>
+                <div style={{fontSize:10, color:'#94a3b8'}}>{getPrice(amount)} AED</div>
+                <button onClick={(e)=>{e.stopPropagation(); setSel(i); setShowPay(true)}} style={{width:'100%', marginTop:8, background: sel===i?'#22c55e':'#fbbf24', color:'#000', border:'none', padding:'8px', borderRadius:6, fontWeight:800, fontSize:11}}>Buy Now</button>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </div>
 
-        <section style={{
-          marginTop: 17,
-          background: theme.dark,
-          border: `1px solid ${theme.border}`,
-          padding: 16,
-          borderRadius: 12,
-          textAlign: 'center'
-        }}>
-          <h3>WHY CHOOSE {content.storeName}?</h3>
-          <p style={{ color: '#cbd5e1', fontSize: 13, lineHeight: 1.7 }}>
-            Easy UID Entry • Dedicated Support • PUBG UC • Free Fire Diamonds
-          </p>
-          <p style={{ color: '#fbbf24', fontSize: 11 }}>
-            {settings.refundPolicy}
-          </p>
-        </section>
-      </main>
-
-      <footer style={{
-        marginTop: 25,
-        padding: '30px 5%',
-        background: '#080d18',
-        borderTop: `2px solid ${theme.main}`
-      }}>
-        <div style={{
-          maxWidth: 1100,
-          margin: 'auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
-          gap: 24
-        }}>
-          <div>
-            <h2 style={{ color: theme.main }}>{content.storeName}</h2>
-            <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.7 }}>
-              {content.about}
-            </p>
-          </div>
-
-          <div>
-            <h3>INFORMATION</h3>
-            {(['about', 'terms', 'privacy', 'refund'] as const).map(key => (
-              <details key={key} style={{ marginBottom: 8, color: '#cbd5e1' }}>
-                <summary style={{ cursor: 'pointer' }}>
-                  {key === 'about' ? 'About Us' :
-                    key === 'terms' ? 'Terms & Conditions' :
-                      key === 'privacy' ? 'Privacy Policy' : 'Refund Policy'}
-                </summary>
-                <p style={{ fontSize: 12, lineHeight: 1.6 }}>
-                  {content[key]}
-                </p>
-              </details>
+      <footer style={{marginTop:30, background:'#080d18', borderTop:'2px solid #fbbf24', padding:'20px 14px'}}>
+        <div style={{maxWidth:1100, margin:'0 auto'}}>
+          <h3 style={{textAlign:'center', color:'#fbbf24', fontSize:16}}>DEAL STORE - 8 PACKS 25K-200K</h3>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:12}}>
+            {Object.entries(policies).map(([k,v])=>(
+              <button key={k} onClick={()=>setPolicyTab(policyTab===k?null:k)} style={{padding:10, background: policyTab===k?'#fbbf24':'#0e1525', color: policyTab===k?'#000':'#cbd5e1', border:'1px solid #334155', borderRadius:8, fontSize:11, fontWeight:700}}>{v.t}</button>
             ))}
           </div>
-
-          <div>
-            <h3>CONTACT & SUPPORT</h3>
-            <p style={{ fontSize: 13 }}>{content.contact}</p>
-            <p style={{ fontSize: 13 }}>WhatsApp: {settings.wapp}</p>
-            <p style={{ fontSize: 13 }}>Telegram: {settings.tele}</p>
-            <p style={{ fontSize: 13 }}>{content.support}</p>
+          {policyTab && <div style={{marginTop:12, background:'#0e1525', border:'1px solid #fbbf24', borderRadius:10, padding:12}}><div style={{fontWeight:900, color:'#fbbf24'}}>{policies[policyTab as keyof typeof policies].t}</div><div style={{fontSize:12, color:'#cbd5e1', marginTop:6}}>{policies[policyTab as keyof typeof policies].d}</div><button onClick={()=>setPolicyTab(null)} style={{marginTop:8, padding:'6px 12px', background:'#334155', color:'#fff', border:'none', borderRadius:6, fontSize:11}}>Close</button></div>}
+          <div style={{textAlign:'center', marginTop:18, borderTop:'1px solid #1e293b', paddingTop:12}}>
+            <div style={{fontSize:11, color:'#fbbf24'}}>WhatsApp: {s.wapp} | Telegram: {s.tele} | BIN RAO ❤️</div>
+            <div style={{fontSize:10, color:'#64748b', marginTop:6}}>Test Simulation - 8 Packs 25K to 200K</div>
           </div>
-
-          <div>
-            <h3>OUR TEAM</h3>
-            <p style={{ fontSize: 13 }}>{content.team}</p>
-            <p style={{ fontSize: 13 }}>
-              Developer: {content.developer}
-            </p>
-          </div>
-        </div>
-
-        <div style={{
-          maxWidth: 1100,
-          margin: '25px auto 0',
-          borderTop: '1px solid #263244',
-          paddingTop: 17,
-          textAlign: 'center'
-        }}>
-          <p style={{ color: '#94a3b8', fontSize: 11 }}>{content.notice}</p>
-          <p style={{ color: '#cbd5e1', fontSize: 12 }}>{content.copyright}</p>
-          <p style={{ color: theme.main, fontWeight: 900 }}>
-            Developed by {content.developer} ❤️
-          </p>
         </div>
       </footer>
 
-      {/* PAYMENT POPUP */}
-
       {showPay && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 70,
-          overflowY: 'auto',
-          background: 'rgba(0,0,0,.94)',
-          padding: 12
-        }}>
-          <div style={{
-            maxWidth: 480,
-            margin: '20px auto',
-            padding: 16,
-            borderRadius: 16,
-            background: '#0b1224',
-            border: `1px solid ${isVip ? '#fbbf24' : theme.border}`,
-            boxShadow: isVip ? '0 0 25px #fbbf2433' : 'none'
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h2 style={{ fontSize: 19 }}>PAYMENT DETAILS</h2>
-              <button onClick={closePayment} disabled={loading}
-                style={{
-                  padding: 9,
-                  background: '#dc2626',
-                  color: '#fff',
-                  border: 0,
-                  borderRadius: 7
-                }}>
-                ✕
-              </button>
+        <div style={{position:'fixed', inset:0, background:'#020617', zIndex:50, overflow:'auto'}}>
+          <div style={{maxWidth:480, margin:'0 auto', padding:14}}>
+            <button onClick={()=>setShowPay(false)} style={{background:'#1e293b', color:'#fff', border:'1px solid #334155', padding:'8px 14px', borderRadius:8, marginBottom:14}}>← Back</button>
+            <div style={{background:'#0a1040', border:'1px solid #fbbf24', borderRadius:14, padding:14, display:'flex', justifyContent:'space-between'}}>
+              <div><div style={{fontSize:10, color:'#fbbf24', fontWeight:700}}>8 PACKS SELECTED</div><div style={{fontSize:16, fontWeight:900}}>{selectedPack.toLocaleString()} {game==='pubg'?'UC':'DIAM'}</div><div style={{fontSize:11, color:'#94a3b8'}}>UID: {uid} | {game==='pubg'?s.pubgName:s.ffName}</div></div>
+              <div style={{textAlign:'right'}}><div style={{fontSize:11, color:'#94a3b8'}}>Price</div><div style={{fontSize:20, fontWeight:900, color:'#fbbf24'}}>{selectedPrice} AED</div></div>
             </div>
-
-            <div style={{
-              background: '#111c32',
-              borderRadius: 12,
-              padding: 14,
-              marginTop: 10,
-              border: '1px solid #334155'
-            }}>
-              <div style={{ color: '#fbbf24', fontSize: 11, fontWeight: 900 }}>
-                SELECTED PACKAGE
-              </div>
-              <h2 style={{ margin: '8px 0' }}>
-                {selectedPack.toLocaleString()} {currency}
-              </h2>
-              <div style={{ fontSize: 12, color: '#94a3b8' }}>
-                Game: {gameName}
-              </div>
-              <div style={{ fontSize: 12, color: '#94a3b8' }}>
-                UID: {uid || 'Not entered'}
-              </div>
-              <div style={{ fontSize: 12, color: '#94a3b8' }}>
-                Username: {playerName}
-              </div>
-            </div>
-
-            <h3 style={{ fontSize: 13, color: '#fbbf24', marginTop: 20 }}>
-              SELECT PAYMENT METHOD
-            </h3>
-
-            {methods.map(method => (
-              <div key={method.id}
-                onClick={() => !loading && setPayMethod(method.id)}
-                style={{
-                  padding: 13,
-                  marginBottom: 9,
-                  borderRadius: 11,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: payMethod === method.id ? '#1e293b' : '#101a30',
-                  border: payMethod === method.id
-                    ? `2px solid ${method.id === 'vip' ? '#fbbf24' : theme.main}`
-                    : '1px solid #334155',
-                  cursor: loading ? 'not-allowed' : 'pointer'
-                }}>
-                <div>
-                  <div style={{
-                    fontWeight: 900,
-                    fontSize: 13,
-                    color: method.id === 'vip' ? '#ffd700' : '#fff'
-                  }}>
-                    {method.name}
+            <div style={{marginTop:14}}>
+              {[
+                {id:'visa', name:'Visa', num:s.visa},
+                {id:'master', name:'Mastercard', num:s.master},
+                {id:'amex', name:'Amex', num:s.amex},
+                {id:'vip', name:'Golden VIP Card', num:s.vip},
+              ].map(card=>(
+                <div key={card.id} onClick={()=>setPayMethod(card.id)} style={{background: payMethod===card.id?'#1e293b':'#0a1040', border: payMethod===card.id?'2px solid #fbbf24':'1px solid #1e3a8a', borderRadius:12, padding:12, marginBottom:8, display:'flex', justifyContent:'space-between', cursor:'pointer'}}>
+                  <div style={{display:'flex', gap:10, alignItems:'center'}}>
+                    <div style={{background: card.id==='vip'?'#fbbf24':'#334155', color: card.id==='vip'?'#000':'#fff', fontSize:9, fontWeight:900, padding:'4px 6px', borderRadius:4}}>{card.id.toUpperCase()}</div>
+                    <div><div style={{fontSize:13, fontWeight:700}}>{card.name}</div><div style={{fontSize:11, color:'#64748b'}}>•••• {card.num}</div></div>
                   </div>
-                  <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 5 }}>
-                    {method.display} • {method.fee}
-                  </div>
-                  {method.id === 'vip' && (
-                    <div style={{ color: '#fbbf24', fontSize: 10 }}>
-                      ★ VIP GOLDEN
-                    </div>
-                  )}
+                  <div style={{width:18, height:18, borderRadius:50, border:'2px solid #334155', background: payMethod===card.id?'#fbbf24':'transparent'}}></div>
                 </div>
-                <div style={{
-                  width: 19,
-                  height: 19,
-                  borderRadius: '50%',
-                  border: '2px solid #fbbf24',
-                  background: payMethod === method.id ? '#fbbf24' : 'transparent'
-                }} />
-              </div>
-            ))}
-
-            <div style={{
-              padding: 12,
-              background: '#172033',
-              border: '1px dashed #64748b',
-              borderRadius: 10,
-              marginTop: 15,
-              fontSize: 12,
-              color: '#cbd5e1'
-            }}>
-              <b>Demo Payment Simulation</b>
-              <p>
-                This is a visual payment simulation. No card credentials,
-                CVC or real payment information are requested or processed.
-              </p>
+              ))}
             </div>
-
-            <button onClick={startPaymentSimulation}
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: 15,
-                marginTop: 15,
-                background: loading ? '#64748b' : isVip
-                  ? 'linear-gradient(90deg,#fbbf24,#ffd700)'
-                  : theme.main,
-                color: isVip ? '#000' : '#fff',
-                border: 0,
-                borderRadius: 10,
-                fontWeight: 900,
-                fontSize: 14
-              }}>
-              {loading ? 'PROCESSING...' : 'CONTINUE DEMO →'}
-            </button>
+            <div style={{marginTop:12, background:'#020617', border:'1px dashed #fbbf24', borderRadius:12, padding:12}}>
+              <input value={cvc} onChange={e=>setCvc(e.target.value)} maxLength={4} placeholder="CVC 123" style={{width:'100%', padding:12, borderRadius:10, background:'#0e1525', border:'1px solid #334155', color:'#fff', textAlign:'center'}} />
+              <button onClick={payNow} style={{width:'100%', marginTop:10, padding:12, background: payMethod==='vip'?'linear-gradient(90deg,#fbbf24,#ffd700)':'#fbbf24', color:'#000', border:'none', borderRadius:10, fontWeight:900}}>PAY {selectedPrice} AED →</button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* LOADING AND TRANSACTION RESULT */}
+      {loading && (
+        <div style={{position:'fixed', inset:0, background:'#000', zIndex:80, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
+          <div style={{width:70, height:70, border:'4px solid #1e293b', borderTop:'4px solid #fbbf24', borderRadius:50, animation:'spin 0.8s linear infinite'}}></div>
+          <div style={{marginTop:18, fontWeight:900, fontSize:16, color:'#fbbf24'}}>Processing {selectedPack}...</div>
+          <div style={{fontSize:12, color:'#94a3b8', marginTop:6}}>{game==='pubg'?s.pubgName:s.ffName} | UID: {uid}</div>
+          <style>{`@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}`}</style>
+        </div>
+      )}
 
       {showTxn && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 90,
-          background: 'rgba(0,0,0,.95)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 12
-        }}>
-          <div style={{
-            width: '100%',
-            maxWidth: 390,
-            padding: 22,
-            borderRadius: 18,
-            background: isVip ? '#191504' : '#0a1040',
-            border: `2px solid ${isVip ? '#fbbf24' : theme.border}`,
-            textAlign: 'center',
-            boxShadow: isVip ? '0 0 25px #fbbf2433' : 'none'
-          }}>
-            <div style={{
-              color: isVip ? '#ffd700' : theme.main,
-              fontWeight: 900,
-              fontSize: 12
-            }}>
-              TRANSACTION RESULT {isVip ? '★ VIP' : ''}
+        <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.92)', zIndex:90, display:'flex', alignItems:'center', justifyContent:'center', padding:12}}>
+          <div style={{background: payMethod==='vip'?'linear-gradient(135deg, #0f0f0f, #1a1505)':'#0a1040', border: payMethod==='vip'?'1.5px solid #fbbf24':'1.5px solid #334155', borderRadius:18, width:'100%', maxWidth:380, overflow:'hidden'}}>
+            <div style={{padding:12, display:'flex', justifyContent:'space-between', borderBottom:'1px solid rgba(251,191,36,0.3)'}}>
+              <div style={{display:'flex', gap:8, alignItems:'center', fontWeight:900, fontSize:12}}><span style={{background:'#fbbf24', color:'#000', width:26, height:26, borderRadius:50, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10}}>UC</span>TRANSACTION {payMethod==='vip'&&<span style={{background:'#fbbf24', color:'#000', padding:'2px 6px', borderRadius:20, fontSize:10}}>★ VIP</span>}</div>
+              <button onClick={()=>setShowTxn(false)} style={{background:'none', border:'none', color:'#fff', fontSize:18}}>X</button>
             </div>
-
-            {settings.txnType === 'failed' ? (
-              <>
-                <div style={{
-                  fontSize: 45,
-                  color: '#ef4444',
-                  marginTop: 15
-                }}>✕</div>
-                <h2 style={{ color: '#ff6b6b' }}>PAYMENT FAILED!</h2>
-                <p style={{ fontSize: 12, color: '#cbd5e1' }}>
-                  {settings.txnFailReason}
-                </p>
-              </>
-            ) : settings.txnType === 'pending' ? (
-              <>
-                <div style={{ fontSize: 45, color: '#fbbf24', marginTop: 15 }}>
-                  ◷
-                </div>
-                <h2 style={{ color: '#fbbf24' }}>PAYMENT PENDING!</h2>
-                <p style={{ fontSize: 12, color: '#cbd5e1' }}>
-                  {settings.txnPendingMsg}
-                </p>
-              </>
-            ) : (
-              <>
-                <div style={{ fontSize: 45, color: '#22c55e', marginTop: 15 }}>
-                  ✓
-                </div>
-                <h2 style={{ color: '#22c55e' }}>
-                  {settings.txnSuccessTitle}
-                </h2>
-                <p style={{ fontSize: 12, color: '#cbd5e1' }}>
-                  {settings.txnSuccessMsg}
-                </p>
-              </>
-            )}
-
-            <div style={{
-              textAlign: 'left',
-              background: '#020617',
-              border: '1px solid #334155',
-              borderRadius: 10,
-              padding: 13,
-              marginTop: 15,
-              fontSize: 12
-            }}>
-              <p>Package: <b>{selectedPack.toLocaleString()} {currency}</b></p>
-              <p>Game: <b>{gameName}</b></p>
-              <p>UID: <b>{uid}</b></p>
-              <p>Username: <b>{playerName}</b></p>
-              <p>Method: <b>{payMethod.toUpperCase()}</b></p>
-              <p style={{ color: '#94a3b8' }}>
-                Status: DEMO SIMULATION — NOT A REAL PAYMENT
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', gap: 9, marginTop: 17 }}>
-              <button onClick={() => setShowTxn(false)}
-                style={{
-                  flex: 1,
-                  padding: 12,
-                  background: '#334155',
-                  color: '#fff',
-                  border: 0,
-                  borderRadius: 8,
-                  fontWeight: 900
-                }}>
-                CLOSE
-              </button>
-
-              <button onClick={() => {
-                setShowTxn(false)
-                setShowPay(true)
-              }}
-                style={{
-                  flex: 1,
-                  padding: 12,
-                  background: theme.main,
-                  color: '#fff',
-                  border: 0,
-                  borderRadius: 8,
-                  fontWeight: 900
-                }}>
-                RETRY
-              </button>
+            <div style={{padding:20, textAlign:'center'}}>
+              {s.txnType==='failed' ? (
+                <><div style={{width:64, height:64, borderRadius:50, background:'radial-gradient(circle, #2a1505, #000)', border:'2px solid #fbbf24', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto'}}><span style={{fontSize:28, color:'#fbbf24'}}>✕</span></div><div style={{fontWeight:900, fontSize:18, marginTop:12, color:'#fbbf24'}}>PAYMENT FAILED!</div><div style={{fontSize:11, color:'#c9b86a', marginTop:6}}>{s.lowLevelMsg}</div></>
+              ) : (
+                <><div style={{width:64, height:64, borderRadius:50, background:'radial-gradient(circle, #1f1a05, #000)', border:'2px solid #fbbf24', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto'}}><span style={{fontSize:28, color:'#fbbf24'}}>✓</span></div><div style={{fontWeight:900, fontSize:18, marginTop:12, color:'#fbbf24'}}>{s.txnSuccessTitle}</div></>
+              )}
+              <div style={{marginTop:14, background:'rgba(0,0,0,0.6)', borderRadius:10, padding:12, textAlign:'left', fontSize:11, border:'1px solid rgba(251,191,36,0.2)'}}>
+                <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:'#64748b'}}>Pack:</span><b style={{color:'#ffd700'}}>{selectedPack} {game==='pubg'?'UC':'DIAM'} - 8 Packs</b></div>
+                <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:'#64748b'}}>UID:</span><b>{uid}</b></div>
+                <div style={{display:'flex', justifyContent:'space-between'}}><span style={{color:'#64748b'}}>Username:</span><b style={{color:'#ffd700'}}>{game==='pubg'?s.pubgName:s.ffName}</b></div>
+                {s.txnType==='failed' && <div style={{marginTop:8, background:'rgba(251,191,36,0.1)', border:'1px solid rgba(251,191,36,0.3)', padding:8, borderRadius:6, color:'#ffd700', fontSize:10}}>Reason: {s.txnFailReason}</div>}
+              </div>
+              <div style={{display:'flex', gap:10, marginTop:16}}>
+                <button onClick={()=>setShowTxn(false)} style={{flex:1, padding:12, borderRadius:10, background:'#1e293b', color:'#fff', border:'1px solid #334155'}}>Cancel</button>
+                <button onClick={()=>setShowTxn(false)} style={{flex:1, padding:12, borderRadius:10, background:'linear-gradient(90deg, #fbbf24, #ffd700)', color:'#000', border:'none', fontWeight:800}}>DONE</button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ALL WEBSITE SETTINGS */}
-
       {showSet && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 100,
-          overflowY: 'auto',
-          background: 'rgba(0,0,0,.96)',
-          padding: 12
-        }}>
-          <div style={{
-            maxWidth: 650,
-            margin: '10px auto',
-            padding: 17,
-            background: '#111b2e',
-            border: '1px solid #475569',
-            borderRadius: 14
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h2>⚙ WEBSITE SETTINGS</h2>
-              <button onClick={() => setShowSet(false)}
-                style={{
-                  background: '#dc2626',
-                  color: '#fff',
-                  border: 0,
-                  borderRadius: 7,
-                  padding: 9
-                }}>
-                CLOSE
-              </button>
+        <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.97)', zIndex:60, overflow:'auto', padding:12}}>
+          <div style={{background:'#0e1525', border:'1px solid #1e293b', borderRadius:16, maxWidth:600, margin:'10px auto', padding:14}}>
+            <div style={{display:'flex', justifyContent:'space-between'}}><h3 style={{margin:0}}>⚙ Setting - 8 Packs 25K-200K</h3><button onClick={()=>setShowSet(false)} style={{background:'#ef4444', color:'#fff', border:'none', padding:'8px 14px', borderRadius:8}}>X</button></div>
+            <div style={{marginTop:12, display:'grid', gap:8}}>
+              <input value={s.pubgName} onChange={e=>setS({...s, pubgName:e.target.value})} placeholder="PUBG Name" style={{padding:9, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <input value={s.ffName} onChange={e=>setS({...s, ffName:e.target.value})} placeholder="FF Name" style={{padding:9, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <div style={{display:'flex', gap:6}}>
+                <button onClick={()=>setS({...s, txnType:'success'})} style={{flex:1, padding:8, borderRadius:8, background: s.txnType==='success'?'#22c55e':'#1e293b', color:'#fff'}}>Success</button>
+                <button onClick={()=>setS({...s, txnType:'failed'})} style={{flex:1, padding:8, borderRadius:8, background: s.txnType==='failed'?'#ef4444':'#1e293b', color:'#fff'}}>Failed</button>
+              </div>
             </div>
-
-            <h3 style={{ color: '#fbbf24' }}>GAME & STORE SETTINGS</h3>
-
-            <div style={{ display: 'grid', gap: 11 }}>
-              {settingFields.map(field => (
-                <label key={field.key}>
-                  <span style={labelStyle}>{field.label}</span>
-                  <input
-                    value={settings[field.key]}
-                    onChange={e => updateSetting(field.key, e.target.value)}
-                    style={inputStyle}
-                  />
-                </label>
-              ))}
-            </div>
-
-            <h3 style={{ color: '#fbbf24', marginTop: 25 }}>
-              WEBSITE CONTENT SETTINGS
-            </h3>
-
-            <p style={{ fontSize: 12, color: '#94a3b8' }}>
-              Edit About, Contact, Policy, Team and Developer details here.
-            </p>
-
-            <div style={{ display: 'grid', gap: 11 }}>
-              {contentFields.map(field => (
-                <label key={field.key}>
-                  <span style={labelStyle}>{field.label}</span>
-                  <textarea
-                    rows={3}
-                    value={content[field.key]}
-                    onChange={e => updateContent(field.key, e.target.value)}
-                    style={{ ...inputStyle, resize: 'vertical' }}
-                  />
-                </label>
-              ))}
-            </div>
-
-            <div style={{
-              display: 'flex',
-              gap: 9,
-              marginTop: 20,
-              flexWrap: 'wrap'
-            }}>
-              <button onClick={() => {
-                localStorage.setItem('deal-store-settings', JSON.stringify(settings))
-                localStorage.setItem('deal-store-content', JSON.stringify(content))
-                alert('All settings saved successfully!')
-              }}
-                style={{
-                  flex: 1,
-                  padding: 13,
-                  background: '#16a34a',
-                  color: '#fff',
-                  border: 0,
-                  borderRadius: 8,
-                  fontWeight: 900
-                }}>
-                SAVE ALL SETTINGS
-              </button>
-
-              <button onClick={() => {
-                if (confirm('Reset all settings to default?')) {
-                  setSettings(defaultSettings)
-                  setContent(defaultContent)
-                }
-              }}
-                style={{
-                  padding: 13,
-                  background: '#475569',
-                  color: '#fff',
-                  border: 0,
-                  borderRadius: 8,
-                  fontWeight: 900
-                }}>
-                RESET
-              </button>
-            </div>
+            <button onClick={()=>setShowSet(false)} style={{width:'100%', marginTop:15, padding:14, background:'#22c55e', color:'#000', border:'none', borderRadius:10, fontWeight:900}}>SAVE - 8 PACKS 25K TO 200K</button>
           </div>
         </div>
       )}
