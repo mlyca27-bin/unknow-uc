@@ -48,7 +48,7 @@ export default function App() {
   const policies = {
     about: { t: 'About Us', d: 'DEAL STORE - Trusted store. 8 Packs 25K to 200K.' },
     privacy: { t: 'Privacy Policy', d: 'We never share your UID. Safe & secure.' },
-    terms: { t: 'Terms', d: '1. Check UID 2. Wrong UID = No Refund 3. 8 Packs' },
+    terms: { t: 'Terms', d: '1. Check UID 2. Wrong UID = No Refund' },
     refund: { t: 'Refund Policy', d: s.refundPolicy },
     contact: { t: 'Contact', d: `WhatsApp: ${s.wapp} | Telegram: ${s.tele}` },
     delivery: { t: 'Delivery', d: '5-30 Minutes instant delivery.' },
@@ -61,7 +61,6 @@ export default function App() {
           <button onClick={()=>{setGame('pubg'); setSel(0)}} style={{padding:'9px 16px', borderRadius:10, fontWeight:900, border:'1px solid #334155', background: game==='pubg'?'#fbbf24':'#1e293b', color: game==='pubg'?'#000':'#fff'}}>PUBG UC</button>
           <button onClick={()=>{setGame('ff'); setSel(0)}} style={{padding:'9px 16px', borderRadius:10, fontWeight:900, border:'1px solid #334155', background: game==='ff'?'#ef4444':'#1e293b', color:'#fff'}}>FREE FIRE</button>
         </div>
-        {/* YAHAN FIX - SIRF Setting LIKHA AAYEGA */}
         <button onClick={()=>setShowSet(true)} style={{padding:'9px 14px', borderRadius:10, border:'1px solid #fbbf24', background:'#1e293b', color:'#fbbf24', fontWeight:800}}>⚙ Setting</button>
       </div>
 
@@ -105,30 +104,51 @@ export default function App() {
         </div>
       </footer>
 
+      {/* PAYMENT PAGE - AB PROFESSIONAL + FOOTER KE SAATH - KHAALI KAALA KHATAM */}
       {showPay && (
-        <div style={{position:'fixed', inset:0, background:'#020617', zIndex:50, overflow:'auto'}}>
-          <div style={{maxWidth:480, margin:'0 auto', padding:14}}>
-            <button onClick={()=>setShowPay(false)} style={{background:'#1e293b', color:'#fff', border:'1px solid #334155', padding:'8px 14px', borderRadius:8}}>← Back</button>
+        <div style={{position:'fixed', inset:0, background:'#020617', zIndex:50, overflowY:'auto'}}>
+          <div style={{maxWidth:480, margin:'0 auto', padding:14, minHeight:'100vh', display:'flex', flexDirection:'column'}}>
+            <button onClick={()=>setShowPay(false)} style={{background:'#1e293b', color:'#fff', border:'1px solid #334155', padding:'8px 14px', borderRadius:8, alignSelf:'flex-start'}}>← Back</button>
+            <div style={{marginTop:14, background:'#0e1525', border:'1px solid #1e293b', borderRadius:10, padding:'10px 14px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+              <div style={{display:'flex', gap:8, alignItems:'center', fontSize:12, fontWeight:700}}><span style={{background:'#22c55e', width:20, height:20, borderRadius:50, display:'flex', alignItems:'center', justifyContent:'center'}}>🔒</span> Secure Payment</div>
+              <div style={{fontSize:10, color:'#94a3b8'}}>SSL • 256-bit Encrypted</div>
+            </div>
             <div style={{background:'linear-gradient(135deg,#0a1040,#0e1525)', border:'1.5px solid #fbbf24', borderRadius:14, padding:14, display:'flex', justifyContent:'space-between', marginTop:12}}>
-              <div><div style={{fontSize:10, color:'#fbbf24', fontWeight:900}}>8 PACKS SELECTED</div><div style={{fontSize:18, fontWeight:900}}>{selectedPack.toLocaleString()} UC</div><div style={{fontSize:11, color:'#94a3b8'}}>UID: {uid} | {game==='pubg'?s.pubgName:s.ffName}</div></div>
-              <div style={{textAlign:'right'}}><div style={{fontSize:22, fontWeight:900, color:'#fbbf24'}}>{selectedPrice} AED</div></div>
+              <div><div style={{fontSize:10, color:'#fbbf24', fontWeight:900}}>8 PACKS SELECTED</div><div style={{fontSize:18, fontWeight:900, marginTop:4}}>{selectedPack.toLocaleString()} {game==='pubg'?'UC':'DIAM'}</div><div style={{fontSize:11, color:'#94a3b8', marginTop:4}}>UID: {uid} | {game==='pubg'?s.pubgName:s.ffName} ✅</div></div>
+              <div style={{textAlign:'right'}}><div style={{fontSize:10, color:'#94a3b8'}}>Total</div><div style={{fontSize:22, fontWeight:900, color:'#fbbf24'}}>{selectedPrice} AED</div></div>
             </div>
             <div style={{marginTop:14}}>
+              <div style={{fontSize:11, fontWeight:900, color:'#cbd5e1', marginBottom:8}}>CHOOSE PAYMENT METHOD</div>
               {[
                 {id:'visa', name:'Visa', num:s.visa},
                 {id:'master', name:'Mastercard', num:s.master},
                 {id:'amex', name:'Amex', num:s.amex},
-                {id:'vip', name:'Golden VIP Card', num:s.vip, badge:'0% FEE'},
+                {id:'vip', name:'Golden VIP Card', num:s.vip, badge:'0% FEE • RECOMMENDED'},
               ].map(card=>(
-                <div key={card.id} onClick={()=>setPayMethod(card.id)} style={{background: payMethod===card.id?'#1a2340':'#0a1040', border: payMethod===card.id?'2px solid #fbbf24':'1px solid #1e293b', borderRadius:12, padding:12, marginBottom:8, display:'flex', justifyContent:'space-between', cursor:'pointer'}}>
-                  <div style={{display:'flex', gap:10, alignItems:'center'}}><div style={{background: card.id==='vip'?'#fbbf24':'#1e293b', color: card.id==='vip'?'#000':'#fff', fontSize:9, fontWeight:900, padding:'6px 8px', borderRadius:6}}>{card.id.toUpperCase()}</div><div><div style={{fontSize:13, fontWeight:800}}>{card.name}</div><div style={{fontSize:11, color:'#64748b'}}>•••• {card.num}</div></div></div>
-                  <div style={{width:20, height:20, borderRadius:50, border:'2px solid #475569', background: payMethod===card.id?'#fbbf24':'transparent'}}></div>
+                <div key={card.id} onClick={()=>setPayMethod(card.id)} style={{background: payMethod===card.id?'#1a2340':'#0a1040', border: payMethod===card.id?'2px solid #fbbf24':'1px solid #1e293b', borderRadius:12, padding:12, marginBottom:8, display:'flex', justifyContent:'space-between', alignItems:'center', cursor:'pointer'}}>
+                  <div style={{display:'flex', gap:10, alignItems:'center'}}>
+                    <div style={{background: card.id==='vip'?'#fbbf24':'#1e293b', color: card.id==='vip'?'#000':'#fff', fontSize:9, fontWeight:900, padding:'6px 8px', borderRadius:6, minWidth:50, textAlign:'center'}}>{card.id.toUpperCase()}</div>
+                    <div><div style={{fontSize:13, fontWeight:800, display:'flex', gap:6, alignItems:'center'}}>{card.name} {card.badge && <span style={{background:'#22c55e', color:'#fff', fontSize:8, padding:'2px 6px', borderRadius:20}}>{card.badge}</span>}</div><div style={{fontSize:11, color:'#64748b', marginTop:2}}>•••• {card.num} • {card.id==='vip'?s.vipFee:s.normalFee}</div></div>
+                  </div>
+                  <div style={{width:20, height:20, borderRadius:50, border:'2px solid #475569', background: payMethod===card.id?'#fbbf24':'transparent', display:'flex', alignItems:'center', justifyContent:'center'}}>{payMethod===card.id && <div style={{width:8, height:8, background:'#000', borderRadius:50}}></div>}</div>
                 </div>
               ))}
             </div>
             <div style={{marginTop:12, background:'#0e1525', border:'1px solid #fbbf24', borderRadius:12, padding:14}}>
-              <input value={cvc} onChange={e=>setCvc(e.target.value)} maxLength={4} placeholder="CVC 123" style={{width:'100%', padding:14, borderRadius:10, background:'#020617', border:'1px solid #334155', color:'#fff', textAlign:'center', fontWeight:900}} />
-              <button onClick={payNow} style={{width:'100%', marginTop:12, padding:14, background: payMethod==='vip'?'linear-gradient(90deg,#fbbf24,#ffd700)':'#fbbf24', color:'#000', border:'none', borderRadius:10, fontWeight:900}}>PAY {selectedPrice} AED →</button>
+              <div style={{display:'flex', justifyContent:'space-between'}}><div style={{fontSize:12, fontWeight:800}}>🔒 Card Security Code</div><div style={{fontSize:10, color:'#94a3b8'}}>CVC / CVV</div></div>
+              <input value={cvc} onChange={e=>setCvc(e.target.value)} maxLength={4} placeholder="Enter" style={{width:'100%', padding:14, borderRadius:10, background:'#020617', border:'1px solid #334155', color:'#fff', textAlign:'center', marginTop:10, fontSize:16, letterSpacing:3, fontWeight:900}} />
+              <button onClick={payNow} style={{width:'100%', marginTop:12, padding:14, background: payMethod==='vip'?'linear-gradient(90deg,#fbbf24,#ffd700)':'#fbbf24', color:'#000', border:'none', borderRadius:10, fontWeight:900, fontSize:14}}>PAY {selectedPrice} AED → SECURE</button>
+              <div style={{display:'flex', justifyContent:'center', gap:12, marginTop:10, fontSize:10, color:'#475569'}}><span>🔒 SSL</span><span>•</span><span>✅ 3D Secure</span><span>•</span><span>🛡️ Protected</span></div>
+            </div>
+            {/* YEH FOOTER KHAALI KAALE KO KHATAM KAREGA */}
+            <div style={{marginTop:16, background:'#080d18', border:'1px solid #1e293b', borderRadius:12, padding:12}}>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10, textAlign:'center'}}>
+                <div><div style={{fontSize:16}}>⚡</div><div style={{fontSize:9, color:'#cbd5e1', fontWeight:700, marginTop:4}}>5-30 Min</div><div style={{fontSize:8, color:'#64748b'}}>Delivery</div></div>
+                <div><div style={{fontSize:16}}>🛡️</div><div style={{fontSize:9, color:'#cbd5e1', fontWeight:700, marginTop:4}}>Safe & Secure</div><div style={{fontSize:8, color:'#64748b'}}>100% Safe</div></div>
+                <div><div style={{fontSize:16}}>💬</div><div style={{fontSize:9, color:'#cbd5e1', fontWeight:700, marginTop:4}}>24/7 Support</div><div style={{fontSize:8, color:'#64748b'}}>WhatsApp</div></div>
+              </div>
+              <div style={{marginTop:12, borderTop:'1px solid #1e293b', paddingTop:10, display:'flex', justifyContent:'space-between', fontSize:9, color:'#475569'}}><span>{s.refundPolicy}</span><span>{s.wapp}</span></div>
+              <div style={{textAlign:'center', marginTop:8, fontSize:9, color:'#334155'}}>Test Simulation • No real card charged • Educational</div>
             </div>
           </div>
         </div>
@@ -137,16 +157,16 @@ export default function App() {
       {loading && (
         <div style={{position:'fixed', inset:0, background:'#000', zIndex:80, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column'}}>
           <div style={{width:70, height:70, border:'4px solid #1e293b', borderTop:'4px solid #fbbf24', borderRadius:50, animation:'spin 0.8s linear infinite'}}></div>
-          <div style={{marginTop:18, fontWeight:900, fontSize:16, color:'#fbbf24'}}>Processing...</div>
+          <div style={{marginTop:18, fontWeight:900, fontSize:16, color:'#fbbf24'}}>Processing {selectedPack}...</div>
           <style>{`@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}`}</style>
         </div>
       )}
 
       {showTxn && (
         <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.92)', zIndex:80, display:'flex', alignItems:'center', justifyContent:'center', padding:12}}>
-          <div style={{background: payMethod==='vip' ? 'linear-gradient(135deg, #0f0f0f, #1a1505)' : '#0a1040', border: payMethod==='vip' ? '1.5px solid #fbbf24' : '1.5px solid #334155', borderRadius:18, width:'100%', maxWidth:380, overflow:'hidden'}}>
+          <div style={{background: 'linear-gradient(135deg, #0f0f0f, #1a1505)', border: '1.5px solid #fbbf24', borderRadius:18, width:'100%', maxWidth:380, overflow:'hidden'}}>
             <div style={{padding:12, display:'flex', justifyContent:'space-between', borderBottom:'1px solid rgba(251,191,36,0.3)'}}>
-              <div style={{display:'flex', gap:8, alignItems:'center', fontWeight:900, fontSize:12}}><span style={{background:'#fbbf24', color:'#000', width:26, height:26, borderRadius:50, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10}}>UC</span>TRANSACTION RESULT</div>
+              <div style={{display:'flex', gap:8, alignItems:'center', fontWeight:900, fontSize:12}}><span style={{background:'#fbbf24', color:'#000', width:26, height:26, borderRadius:50, display:'flex', alignItems:'center', justifyContent:'center', fontSize:10}}>UC</span>TRANSACTION RESULT <span style={{background:'linear-gradient(90deg,#fbbf24,#ffd700)', color:'#000', padding:'2px 6px', borderRadius:20, fontSize:10, marginLeft:6}}>★ VIP</span></div>
               <button onClick={()=>setShowTxn(false)} style={{background:'none', border:'none', color:'#fff', fontSize:18}}>X</button>
             </div>
             <div style={{padding:20, textAlign:'center'}}>
@@ -164,7 +184,7 @@ export default function App() {
                 </>
               )}
               <div style={{marginTop:14, background:'rgba(0,0,0,0.6)', borderRadius:10, padding:12, textAlign:'left', fontSize:11, border:'1px solid rgba(251,191,36,0.2)'}}>
-                <div style={{display:'flex', justifyContent:'space-between', padding:'5px 0'}}><span style={{color:'#64748b'}}>Pack:</span><b style={{color:'#ffd700'}}>{selectedPack} UC</b></div>
+                <div style={{display:'flex', justifyContent:'space-between', padding:'5px 0'}}><span style={{color:'#64748b'}}>Pack:</span><b style={{color:'#ffd700'}}>{selectedPack} UC - {selectedPrice} AED</b></div>
                 <div style={{display:'flex', justifyContent:'space-between', padding:'5px 0'}}><span style={{color:'#64748b'}}>UID:</span><b>{uid}</b></div>
                 <div style={{display:'flex', justifyContent:'space-between', padding:'5px 0'}}><span style={{color:'#64748b'}}>Username:</span><b style={{color:'#ffd700'}}>{game==='pubg'?s.pubgName:s.ffName}</b></div>
                 <div style={{display:'flex', justifyContent:'space-between', padding:'5px 0'}}><span style={{color:'#64748b'}}>Card:</span><span>{payMethod.toUpperCase()} •• {payMethod==='vip'?s.vip:s.visa} ★</span></div>
@@ -173,61 +193,60 @@ export default function App() {
               </div>
               <div style={{display:'flex', gap:10, marginTop:16}}>
                 <button onClick={()=>setShowTxn(false)} style={{flex:1, padding:12, borderRadius:10, background:'#1e293b', color:'#fff', border:'1px solid #334155'}}>Cancel</button>
-                <button onClick={()=>setShowTxn(false)} style={{flex:1, padding:12, borderRadius:10, background:'linear-gradient(90deg, #fbbf24, #ffd700)', color:'#000', border:'none', fontWeight:800}}>DONE</button>
+                <button onClick={()=>setShowTxn(false)} style={{flex:1, padding:12, borderRadius:10, background:'linear-gradient(90deg, #fbbf24, #ffd700)', color:'#000', border:'none', fontWeight:800}}>{s.txnType==='failed'?'RETRY':'DONE'}</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* 22 SETTINGS FULL FIX - AB PURA DIKHEGA */}
+      {/* SETTING - 22 FIELDS - FULL SCROLL - FIXED */}
       {showSet && (
         <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.97)', zIndex:60, overflowY:'auto', padding:12}}>
-          <div style={{background:'#0e1525', border:'1px solid #fbbf24', borderRadius:16, maxWidth:600, margin:'10px auto', padding:14, paddingBottom:30}}>
-            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}><h3 style={{margin:0, fontSize:16}}>⚙ Setting</h3><button onClick={()=>setShowSet(false)} style={{background:'#ef4444', color:'#fff', border:'none', padding:'8px 14px', borderRadius:8, fontWeight:900}}>X</button></div>
+          <div style={{background:'#0e1525', border:'1px solid #fbbf24', borderRadius:16, maxWidth:600, margin:'10px auto', padding:14}}>
+            <div style={{display:'flex', justifyContent:'space-between'}}><h3 style={{margin:0}}>⚙ Setting</h3><button onClick={()=>setShowSet(false)} style={{background:'#ef4444', color:'#fff', border:'none', padding:'8px 14px', borderRadius:8, fontWeight:900}}>X</button></div>
             <div style={{marginTop:12, display:'grid', gap:10, maxHeight:'75vh', overflowY:'auto', paddingRight:6}}>
-              <div style={{fontSize:11, fontWeight:900, color:'#fbbf24'}}>1-3: NAMES</div>
-              <input value={s.pubgName} onChange={e=>setS({...s, pubgName:e.target.value})} placeholder="1. PUBG Name - BINRAO 876" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.ffName} onChange={e=>setS({...s, ffName:e.target.value})} placeholder="2. FF Name - BINRAO FF" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <div style={{fontSize:11, fontWeight:900, color:'#fbbf24'}}>3-5: SAVED UIDs</div>
-              <input value={s.uid1} onChange={e=>setS({...s, uid1:e.target.value})} placeholder="3. UID1 - 5991827364" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.uid2} onChange={e=>setS({...s, uid2:e.target.value})} placeholder="4. UID2 - 5829104821" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.uid3} onChange={e=>setS({...s, uid3:e.target.value})} placeholder="5. UID3 - 5123456789" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <div style={{fontSize:11, fontWeight:900, color:'#fbbf24'}}>6-7: BANNERS</div>
-              <input value={s.pubgBanner} onChange={e=>setS({...s, pubgBanner:e.target.value})} placeholder="6. PUBG Banner" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.ffBanner} onChange={e=>setS({...s, ffBanner:e.target.value})} placeholder="7. FF Banner" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <div style={{fontSize:11, fontWeight:900, color:'#fbbf24'}}>8-11: CARDS</div>
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8}}>
-                <input value={s.visa} onChange={e=>setS({...s, visa:e.target.value})} placeholder="8. VISA 4242" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-                <input value={s.master} onChange={e=>setS({...s, master:e.target.value})} placeholder="9. MASTER 8888" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-                <input value={s.amex} onChange={e=>setS({...s, amex:e.target.value})} placeholder="10. AMEX 1001" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-                <input value={s.vip} onChange={e=>setS({...s, vip:e.target.value})} placeholder="11. VIP 1234" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <div style={{fontSize:11, fontWeight:900, color:'#fbbf24'}}>1-5: NAME + UIDs</div>
+              <input value={s.pubgName} onChange={e=>setS({...s, pubgName:e.target.value})} placeholder="PUBG Name" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <input value={s.ffName} onChange={e=>setS({...s, ffName:e.target.value})} placeholder="FF Name" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:6}}>
+                <input value={s.uid1} onChange={e=>setS({...s, uid1:e.target.value})} placeholder="UID1" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.uid2} onChange={e=>setS({...s, uid2:e.target.value})} placeholder="UID2" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.uid3} onChange={e=>setS({...s, uid3:e.target.value})} placeholder="UID3" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              </div>
+              <div style={{fontSize:11, fontWeight:900, color:'#fbbf24'}}>6-11: BANNER + CARDS</div>
+              <input value={s.pubgBanner} onChange={e=>setS({...s, pubgBanner:e.target.value})} placeholder="PUBG Banner" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <input value={s.ffBanner} onChange={e=>setS({...s, ffBanner:e.target.value})} placeholder="FF Banner" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:6}}>
+                <input value={s.visa} onChange={e=>setS({...s, visa:e.target.value})} placeholder="VISA 4242" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.master} onChange={e=>setS({...s, master:e.target.value})} placeholder="MASTER 8888" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.amex} onChange={e=>setS({...s, amex:e.target.value})} placeholder="AMEX 1001" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.vip} onChange={e=>setS({...s, vip:e.target.value})} placeholder="VIP 1234" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
               </div>
               <div style={{fontSize:11, fontWeight:900, color:'#fbbf24'}}>12-13: CONTACT</div>
-              <input value={s.wapp} onChange={e=>setS({...s, wapp:e.target.value})} placeholder="12. WhatsApp +9715537374" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.tele} onChange={e=>setS({...s, tele:e.target.value})} placeholder="13. Telegram @BINRAO876" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <div style={{fontSize:11, fontWeight:900, color:'#ef4444'}}>14-18: TRANSACTION TYPE</div>
+              <input value={s.wapp} onChange={e=>setS({...s, wapp:e.target.value})} placeholder="WhatsApp" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <input value={s.tele} onChange={e=>setS({...s, tele:e.target.value})} placeholder="Telegram" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <div style={{fontSize:11, fontWeight:900, color:'#ef4444'}}>14-18: TRANSACTION</div>
               <div style={{display:'flex', gap:6}}>
-                <button onClick={()=>setS({...s, txnType:'success'})} style={{flex:1, padding:10, borderRadius:8, background: s.txnType==='success'?'#22c55e':'#1e293b', color:'#fff', border:'1px solid #334155', fontWeight:700}}>Success</button>
-                <button onClick={()=>setS({...s, txnType:'failed'})} style={{flex:1, padding:10, borderRadius:8, background: s.txnType==='failed'?'#ef4444':'#1e293b', color:'#fff', border:'1px solid #334155', fontWeight:700}}>Failed</button>
-                <button onClick={()=>setS({...s, txnType:'pending'})} style={{flex:1, padding:10, borderRadius:8, background: s.txnType==='pending'?'#f59e0b':'#1e293b', color:'#fff', border:'1px solid #334155', fontWeight:700}}>Pending</button>
+                <button onClick={()=>setS({...s, txnType:'success'})} style={{flex:1, padding:10, borderRadius:8, background: s.txnType==='success'?'#22c55e':'#1e293b', color:'#fff', fontWeight:700}}>Success</button>
+                <button onClick={()=>setS({...s, txnType:'failed'})} style={{flex:1, padding:10, borderRadius:8, background: s.txnType==='failed'?'#ef4444':'#1e293b', color:'#fff', fontWeight:700}}>Failed</button>
+                <button onClick={()=>setS({...s, txnType:'pending'})} style={{flex:1, padding:10, borderRadius:8, background: s.txnType==='pending'?'#f59e0b':'#1e293b', color:'#fff', fontWeight:700}}>Pending</button>
               </div>
-              <textarea value={s.txnFailReason} onChange={e=>setS({...s, txnFailReason:e.target.value})} placeholder="14. Fail Reason" rows={2} style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155', fontSize:12}} />
-              <input value={s.txnSuccessTitle} onChange={e=>setS({...s, txnSuccessTitle:e.target.value})} placeholder="15. Success Title" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.txnSuccessMsg} onChange={e=>setS({...s, txnSuccessMsg:e.target.value})} placeholder="16. Success Msg" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.txnPendingMsg} onChange={e=>setS({...s, txnPendingMsg:e.target.value})} placeholder="17. Pending Msg" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <input value={s.lowLevelMsg} onChange={e=>setS({...s, lowLevelMsg:e.target.value})} placeholder="18. Low Level Msg" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <div style={{fontSize:11, fontWeight:900, color:'#22c55e'}}>19-22: PACKS + FEES + LOADING</div>
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:8}}>
-                <input value={s.minPack} onChange={e=>setS({...s, minPack:e.target.value})} placeholder="19. Min 25000" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-                <input value={s.maxPack} onChange={e=>setS({...s, maxPack:e.target.value})} placeholder="20. Max 200000" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-                <input value={s.vipFee} onChange={e=>setS({...s, vipFee:e.target.value})} placeholder="21. VIP Fee 0% FEE" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-                <input value={s.normalFee} onChange={e=>setS({...s, normalFee:e.target.value})} placeholder="22. Normal Fee 3% FEE" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <textarea value={s.txnFailReason} onChange={e=>setS({...s, txnFailReason:e.target.value})} placeholder="Fail Reason" rows={2} style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155', fontSize:12}} />
+              <input value={s.txnSuccessTitle} onChange={e=>setS({...s, txnSuccessTitle:e.target.value})} placeholder="Success Title" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <input value={s.txnSuccessMsg} onChange={e=>setS({...s, txnSuccessMsg:e.target.value})} placeholder="Success Msg" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <input value={s.lowLevelMsg} onChange={e=>setS({...s, lowLevelMsg:e.target.value})} placeholder="Low Level Msg" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <div style={{fontSize:11, fontWeight:900, color:'#22c55e'}}>19-22: PACKS + FEES</div>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:6}}>
+                <input value={s.minPack} onChange={e=>setS({...s, minPack:e.target.value})} placeholder="Min 25000" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.maxPack} onChange={e=>setS({...s, maxPack:e.target.value})} placeholder="Max 200000" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.vipFee} onChange={e=>setS({...s, vipFee:e.target.value})} placeholder="VIP Fee" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+                <input value={s.normalFee} onChange={e=>setS({...s, normalFee:e.target.value})} placeholder="Normal Fee" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
               </div>
-              <input value={s.loadingTime} onChange={e=>setS({...s, loadingTime:e.target.value})} placeholder="Loading Time 3000ms" style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
-              <textarea value={s.refundPolicy} onChange={e=>setS({...s, refundPolicy:e.target.value})} placeholder="Refund Policy - Wrong UID = No Refund" rows={2} style={{width:'100%', padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155', fontSize:12}} />
+              <input value={s.loadingTime} onChange={e=>setS({...s, loadingTime:e.target.value})} placeholder="Loading Time 3000" style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155'}} />
+              <textarea value={s.refundPolicy} onChange={e=>setS({...s, refundPolicy:e.target.value})} placeholder="Refund Policy" rows={2} style={{padding:10, borderRadius:8, background:'#020617', color:'#fff', border:'1px solid #334155', fontSize:12}} />
             </div>
-            <button onClick={()=>setShowSet(false)} style={{width:'100%', marginTop:15, padding:14, background:'#22c55e', color:'#000', border:'none', borderRadius:10, fontWeight:900, fontSize:14}}>SAVE ALL 22 FIELDS ✅</button>
+            <button onClick={()=>setShowSet(false)} style={{width:'100%', marginTop:15, padding:14, background:'#22c55e', color:'#000', border:'none', borderRadius:10, fontWeight:900}}>SAVE ALL 22 FIELDS ✅</button>
           </div>
         </div>
       )}
