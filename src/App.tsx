@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 
 const PACKS = [
-  { id: 1, t: '12000 UC', uc: 12000, bonus: 3000, price: 490, best: false },
-  { id: 2, t: '24000 UC', uc: 24000, bonus: 8000, price: 980, best: false },
-  { id: 3, t: '30000 UC', uc: 30000, bonus: 10000, price: 1220, best: false },
-  { id: 4, t: '40500 UC', uc: 40500, bonus: 15000, price: 1649, best: true },
-  { id: 5, t: '50000 UC', uc: 50000, bonus: 18000, price: 2030, best: false },
-  { id: 6, t: '60000 UC', uc: 60000, bonus: 22000, price: 2440, best: false },
-  { id: 7, t: '70000 UC', uc: 70000, bonus: 30000, price: 2849, best: true },
+  { id: 1, t: '12000 UC', total: '15000 UC Total', bonus: '+3000 Bonus', price: 490, best: false },
+  { id: 2, t: '24000 UC', total: '32000 UC Total', bonus: '+8000 Bonus', price: 980, best: false },
+  { id: 3, t: '30000 UC', total: '40000 UC Total', bonus: '+10000 Bonus', price: 1220, best: false },
+  { id: 4, t: '40500 UC', total: '55500 UC Total', bonus: '+15000 Bonus', price: 1649, best: true },
+  { id: 5, t: '50000 UC', total: '68000 UC Total', bonus: '+18000 Bonus', price: 2030, best: false },
+  { id: 6, t: '60000 UC', total: '82000 UC Total', bonus: '+22000 Bonus', price: 2440, best: false },
+  { id: 7, t: '70000 UC', total: '100000 UC Total', bonus: '+30000 Bonus', price: 2849, best: true },
 ];
 
 export default function App() {
@@ -16,70 +16,69 @@ export default function App() {
   const [orders, setOrders] = useState<any[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('pubg_uid');
-    if (saved) setUid(saved);
-    try {
-      const o = JSON.parse(localStorage.getItem('orders') || '[]');
-      setOrders(o);
-    } catch {}
+    const s = localStorage.getItem('pubg_uid');
+    if (s) setUid(s);
+    try { setOrders(JSON.parse(localStorage.getItem('orders') || '[]')); } catch {}
   }, []);
 
   const buy = (p: any) => {
     if (!uid.trim()) { alert('Pehle UID dalo!'); return; }
-    const newOrder = { id: 'ORD-' + Date.now(), pack: p.t, uid, price: p.price };
-    const updated = [newOrder, ...orders];
+    const updated = [{ id: Date.now(), pack: p.t, uid, price: p.price }, ...orders];
     setOrders(updated);
     localStorage.setItem('orders', JSON.stringify(updated));
     localStorage.setItem('pubg_uid', uid);
     setSel(null);
-    alert('✅ Order Success! ' + p.t + ' UID: ' + uid);
+    alert('✅ Order Success! ' + p.t);
   };
 
   return (
-    <div className="min-h-screen bg-[#050b1e] text-white flex flex-col">
-      <header className="bg-[#0a122e] border-b border-[#1b2b5d] p-4 flex justify-between items-center sticky top-0 z-10">
-        <h1 className="font-black text-xl">🎮 UNKNOWN UC STORE</h1>
-        <div className="bg-[#14296b] px-3 py-1 rounded-full text-xs">Orders: {orders.length}</div>
-      </header>
-      <main className="max-w-5xl mx-auto w-full p-4 space-y-4">
-        <div className="bg-gradient-to-r from-[#0c1b48] to-[#14296b] border border-[#233878] rounded-2xl p-5">
-          <h2 className="text-2xl font-black">PUBG UC 12K TO 70K</h2>
-          <p className="text-sm text-slate-300 mt-1">Fast • Safe • Instant Delivery • 24/7</p>
-        </div>
-        <div className="bg-[#0a122e] border border-[#1b2b5d] rounded-xl p-4">
-          <label className="text-sm font-bold">Your PUBG Character UID *</label>
-          <input value={uid} onChange={e=>setUid(e.target.value)} placeholder="5123456783" className="w-full mt-2 bg-[#050b1e] border border-[#233878] rounded-lg p-3 text-white outline-none" />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {PACKS.map((p:any) => (
-            <div key={p.id} className={`bg-[#0a122e] border rounded-xl p-4 relative ${p.best ? 'border-amber-400' : 'border-[#1b2b5d]'}`}>
-              {p.best && <span className="absolute -top-2 -right-2 bg-amber-400 text-black text-[10px] font-black px-2 py-1 rounded-full">BEST</span>}
-              <div className="font-black text-lg">{p.t}</div>
-              <div className="text-amber-300 font-bold">{p.uc + p.bonus} UC</div>
-              <div className="text-xs text-emerald-400">+{p.bonus} Bonus UC</div>
-              <div className="text-white font-black mt-2">AED {p.price}</div>
-              <button onClick={()=>setSel(p)} className="w-full mt-3 bg-[#2a4bff] py-2.5 rounded-lg font-bold text-sm">SELECT</button>
-            </div>
-          ))}
-        </div>
-      </main>
+    <div style={{ background: '#050b1e', color: 'white', minHeight: '100vh', padding: '16px', fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h1 style={{ fontWeight: 900, fontSize: '20px' }}>🎮 UNKNOWN UC STORE</h1>
+        <div style={{ background: '#14296b', padding: '4px 12px', borderRadius: '20px', fontSize: '12px' }}>Orders: {orders.length}</div>
+      </div>
+
+      <div style={{ background: 'linear-gradient(90deg,#0c1b48,#14296b)', border: '1px solid #233878', borderRadius: '16px', padding: '16px', marginBottom: '16px' }}>
+        <h2 style={{ fontWeight: 900, fontSize: '20px' }}>PUBG UC 12K TO 70K</h2>
+        <p style={{ fontSize: '13px', color: '#aab', marginTop: '4px' }}>Fast • Safe • Instant Delivery • 24/7</p>
+      </div>
+
+      <div style={{ background: '#0a122e', border: '1px solid #1b2b5d', borderRadius: '12px', padding: '12px', marginBottom: '16px' }}>
+        <label style={{ fontSize: '13px', fontWeight: 700 }}>Your PUBG Character UID *</label>
+        <input value={uid} onChange={e => setUid(e.target.value)} placeholder="5123456783" style={{ width: '100%', marginTop: '8px', background: '#050b1e', border: '1px solid #233878', borderRadius: '10px', padding: '12px', color: 'white', outline: 'none' }} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+        {PACKS.map((p: any) => (
+          <div key={p.id} style={{ background: '#0a122e', border: p.best ? '2px solid #fbbf24' : '1px solid #1b2b5d', borderRadius: '14px', padding: '14px', position: 'relative' }}>
+            {p.best && <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: '#fbbf24', color: 'black', fontSize: '9px', fontWeight: 900, padding: '3px 8px', borderRadius: '10px' }}>BEST</span>}
+            <div style={{ fontWeight: 900 }}>{p.t}</div>
+            <div style={{ color: '#fbbf24', fontSize: '13px', marginTop: '2px' }}>{p.total}</div>
+            <div style={{ color: '#34d399', fontSize: '12px', marginTop: '2px' }}>{p.bonus}</div>
+            <div style={{ fontWeight: 900, marginTop: '8px' }}>AED {p.price}</div>
+            <button onClick={() => setSel(p)} style={{ width: '100%', marginTop: '10px', background: '#2a4bff', color: 'white', padding: '10px', borderRadius: '10px', border: 'none', fontWeight: 700, fontSize: '13px' }}>SELECT</button>
+          </div>
+        ))}
+      </div>
+
       {sel && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-[#0a122e] border border-[#233878] rounded-2xl p-5 w-full max-w-sm">
-            <h3 className="font-black text-xl">Confirm Order</h3>
-            <div className="mt-3 space-y-1 text-sm bg-[#050b1e] p-3 rounded-lg">
-              <p>Pack: <b className="text-amber-300">{sel.t}</b></p>
-              <p>Total UC: <b>{sel.uc + sel.bonus}</b></p>
-              <p>UID: <b>{uid}</b></p>
-              <p>Price: <b className="text-green-400">AED {sel.price}</b></p>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 50 }}>
+          <div style={{ background: '#0a122e', border: '1px solid #233878', borderRadius: '16px', padding: '20px', width: '100%', maxWidth: '340px' }}>
+            <h3 style={{ fontWeight: 900, fontSize: '18px' }}>Confirm Order</h3>
+            <div style={{ marginTop: '12px', background: '#050b1e', padding: '12px', borderRadius: '10px', fontSize: '13px', lineHeight: '1.6' }}>
+              <div>Pack: <b style={{ color: '#fbbf24' }}>{sel.t}</b></div>
+              <div>Total: <b>{sel.total}</b></div>
+              <div>UID: <b>{uid || 'Not set'}</b></div>
+              <div>Price: <b style={{ color: '#34d399' }}>AED {sel.price}</b></div>
             </div>
-            <div className="flex gap-2 mt-5">
-              <button onClick={()=>setSel(null)} className="flex-1 bg-slate-700 py-2.5 rounded-xl font-bold">Cancel</button>
-              <button onClick={()=>buy(sel)} className="flex-1 bg-[#2a4bff] py-2.5 rounded-xl font-bold">Pay & Buy</button>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+              <button onClick={() => setSel(null)} style={{ flex: 1, background: '#334155', padding: '12px', borderRadius: '12px', border: 'none', color: 'white', fontWeight: 700 }}>Cancel</button>
+              <button onClick={() => buy(sel)} style={{ flex: 1, background: '#2a4bff', padding: '12px', borderRadius: '12px', border: 'none', color: 'white', fontWeight: 700 }}>Pay & Buy</button>
             </div>
           </div>
         </div>
       )}
+      <p style={{ marginTop: '20px', fontSize: '11px', color: '#666', textAlign: 'center' }}>© UNKNOWN UC STORE</p>
     </div>
   );
 }
