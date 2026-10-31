@@ -277,7 +277,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     id="cvcInput"
                     value={cvcInput}
                     onChange={(e) => setCvcInput(e.target.value.replace(/\D/g, ''))}
-                    placeholder="CVC
+                    placeholder="CVC"
                     className="w-full bg-[#0a122e] border border-[#2a3d7a] focus:border-[#ffcc00] text-white font-mono font-bold text-center text-lg py-2 rounded-lg focus:outline-none"
                   />
                   <button
