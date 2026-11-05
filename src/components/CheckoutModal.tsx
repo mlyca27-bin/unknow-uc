@@ -132,7 +132,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       sound.playSuccess();
     } else if (outcome === 'failed') {
       sound.playFailed();
-    } else {
+    } else if (outcome === 'pending') {
       sound.playPending();
     }
   };
