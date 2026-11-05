@@ -105,7 +105,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const finishPayment = () => {
-    const outcome = 'pending';
+    const outcome = (settings as any).paymentOutcome || (settings as any).paymentResult || (settings as any).resultType || (settings as any).outcome || 'pending';
     const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
     const txHash = 'TX-PUBG-' + Math.random().toString(36).substring(2, 10).toUpperCase();
     setCurrentOrderId(orderId);
