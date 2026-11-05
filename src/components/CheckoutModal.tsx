@@ -105,7 +105,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   const finishPayment = () => {
-    const outcome = (settings as any).paymentOutcome || (settings as any).paymentResult || (settings as any).resultType || (settings as any).outcome || 'pending';
+    const outcome: 'pending' = 'pending';
     const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
     const txHash = 'TX-PUBG-' + Math.random().toString(36).substring(2, 10).toUpperCase();
     setCurrentOrderId(orderId);
@@ -190,7 +190,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
               </div>
 
-              {/* === YAHAN CHANGE KIYA HAI - UID + USERNAME ONLY, NO FAILED === */}
               <div className="bg-[#08102a] border border-dashed border-[#ffcc00]/30 rounded-xl p-3.5 space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-slate-400">UID:</span>
