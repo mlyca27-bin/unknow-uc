@@ -104,7 +104,6 @@ export default function App() {
         </div>
       </footer>
 
-      {/* PAYMENT PAGE - AB PROFESSIONAL + FOOTER KE SAATH - KHAALI KAALA KHATAM */}
       {showPay && (
         <div style={{position:'fixed', inset:0, background:'#020617', zIndex:50, overflowY:'auto'}}>
           <div style={{maxWidth:480, margin:'0 auto', padding:14, minHeight:'100vh', display:'flex', flexDirection:'column'}}>
@@ -140,7 +139,6 @@ export default function App() {
               <button onClick={payNow} style={{width:'100%', marginTop:12, padding:14, background: payMethod==='vip'?'linear-gradient(90deg,#fbbf24,#ffd700)':'#fbbf24', color:'#000', border:'none', borderRadius:10, fontWeight:900, fontSize:14}}>PAY {selectedPrice} AED → SECURE</button>
               <div style={{display:'flex', justifyContent:'center', gap:12, marginTop:10, fontSize:10, color:'#475569'}}><span>🔒 SSL</span><span>•</span><span>✅ 3D Secure</span><span>•</span><span>🛡️ Protected</span></div>
             </div>
-            {/* YEH FOOTER KHAALI KAALE KO KHATAM KAREGA */}
             <div style={{marginTop:16, background:'#080d18', border:'1px solid #1e293b', borderRadius:12, padding:12}}>
               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10, textAlign:'center'}}>
                 <div><div style={{fontSize:16}}>⚡</div><div style={{fontSize:9, color:'#cbd5e1', fontWeight:700, marginTop:4}}>5-30 Min</div><div style={{fontSize:8, color:'#64748b'}}>Delivery</div></div>
@@ -176,6 +174,12 @@ export default function App() {
                   <div style={{fontWeight:900, fontSize:18, marginTop:12, color:'#fbbf24'}}>PAYMENT FAILED!</div>
                   <div style={{fontSize:11, color:'#c9b86a', marginTop:6}}>{s.lowLevelMsg}</div>
                 </>
+              ) : s.txnType==='pending' ? (
+                <>
+                  <div style={{width:64, height:64, borderRadius:50, background:'radial-gradient(circle, #2a1a05, #000)', border:'2px solid #f59e0b', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto'}}><span style={{fontSize:28, color:'#f59e0b'}}>⏳</span></div>
+                  <div style={{fontWeight:900, fontSize:18, marginTop:12, color:'#f59e0b'}}>PAYMENT PENDING!</div>
+                  <div style={{fontSize:11, color:'#c9b86a', marginTop:6}}>{s.txnPendingMsg}</div>
+                </>
               ) : (
                 <>
                   <div style={{width:64, height:64, borderRadius:50, background:'radial-gradient(circle, #1f1a05, #000)', border:'2px solid #fbbf24', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto'}}><span style={{fontSize:28, color:'#fbbf24'}}>✓</span></div>
@@ -190,6 +194,7 @@ export default function App() {
                 <div style={{display:'flex', justifyContent:'space-between', padding:'5px 0'}}><span style={{color:'#64748b'}}>Card:</span><span>{payMethod.toUpperCase()} •• {payMethod==='vip'?s.vip:s.visa} ★</span></div>
                 <div style={{display:'flex', justifyContent:'space-between', padding:'5px 0', borderTop:'1px dashed #334155', marginTop:6, paddingTop:8}}><span style={{color:'#64748b'}}>Time:</span><b style={{color:'#fff'}}>{txnTime}</b></div>
                 {s.txnType==='failed' && <div style={{marginTop:8, background:'rgba(251,191,36,0.1)', border:'1px solid rgba(251,191,36,0.3)', padding:8, borderRadius:6, color:'#ffd700', fontSize:10}}>Reason: {s.txnFailReason}</div>}
+                {s.txnType==='pending' && <div style={{marginTop:8, background:'rgba(245,158,11,0.1)', border:'1px solid rgba(245,158,11,0.3)', padding:8, borderRadius:6, color:'#fbbf24', fontSize:10}}>Waiting for bank confirmation... UC will be credited once confirmed.</div>}
               </div>
               <div style={{display:'flex', gap:10, marginTop:16}}>
                 <button onClick={()=>setShowTxn(false)} style={{flex:1, padding:12, borderRadius:10, background:'#1e293b', color:'#fff', border:'1px solid #334155'}}>Cancel</button>
@@ -200,7 +205,6 @@ export default function App() {
         </div>
       )}
 
-      {/* SETTING - 22 FIELDS - FULL SCROLL - FIXED */}
       {showSet && (
         <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.97)', zIndex:60, overflowY:'auto', padding:12}}>
           <div style={{background:'#0e1525', border:'1px solid #fbbf24', borderRadius:16, maxWidth:600, margin:'10px auto', padding:14}}>
@@ -252,4 +256,4 @@ export default function App() {
       )}
     </div>
   )
-}
+                }
